@@ -713,7 +713,7 @@ const fixA=a=>{a=a%360;return a<0?a+360:a},fixH=h=>{h=h%24;return h<0?h+24:h};
 function jdn(y,m,d){if(m<=2){y-=1;m+=12}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5}
 function sunPos(j){const D=j-2451545,g=fixA(357.529+0.98560028*D),q=fixA(280.459+0.98564736*D),Lm=fixA(q+1.915*sin(g)+0.020*sin(2*g)),e=23.439-0.00000036*D,RA=fixH(atan2(cos(e)*sin(Lm),cos(Lm))/15);return{dec:asin(sin(e)*sin(Lm)),eq:q/15-RA}}
 function loc(){const c=S.cfg||DEF.cfg;if(CITIES[c.city])return{lat:CITIES[c.city][1],lng:CITIES[c.city][2],name:CITIES[c.city][0]};return{lat:c.lat,lng:c.lng,name:'موقعي الحالي'}}
-function prayerTimes(date){const c=S.cfg||DEF.cfg,l=loc(),m=METHODS[c.method]||METHODS.mwl,lat=l.lat,lng=l.lng,tz=-date.getTimezoneOffset()/60;
+function prayerTimes(date){const c=S.cfg||DEF.cfg,l=loc(),m=METHODS[c.method]||METHODS.mwl,lat=l.lat,lng=l.lng,tz=-new Date(date.getFullYear(),date.getMonth(),date.getDate(),12).getTimezoneOffset()/60;
 const j0=jdn(date.getFullYear(),date.getMonth()+1,date.getDate())-lng/360;
 let t={fajr:5,sunrise:6,dhuhr:12,asr:13,sunset:18,isha:18},n;
 for(let k=0;k<2;k++){const P=x=>sunPos(j0+t[x]/24),noon=x=>fixH(12-P(x).eq);
@@ -761,8 +761,8 @@ extraAlerts(a,now,P,cur,ds);agAlerts(now,cur,ds)}
 setInterval(alertTick,5000);
 function gapBlock(P){const G=[['fajr','dhuhr','الفجر','الظهر'],['dhuhr','asr','الظهر','العصر'],['asr','maghrib','العصر','المغرب'],['maghrib','isha','المغرب','العشاء'],['isha','fajr','العشاء','الفجر']];
 return '<div class="gpt"><b class="gph">'+ico('timer',16)+'المدة بين الصلوات</b><div class="gpg">'+G.map(g=>{let d=P[g[1]]-P[g[0]];if(d<=0)d+=24;return `<div class="gpc ${g[0]}"><small>بين ${g[2]} و${g[3]}${g[0]==='isha'?' (التالي)':''}</small><b>${durTxt(d)}</b></div>`}).join('')+'</div></div>'}
-function prayerCard(dd,P){const c=S.cfg||DEF.cfg;
-let h='<div class="card"><div class="row" style="margin-top:0"><b class="ct">'+ico('sunrise',18)+'مواقيت الصلاة</b><span>'+esc(loc().name)+'</span></div><div class="ptg">'+NAMES.map(x=>`<div class="pt ${x[0]}"><span class="pti">${ico(PTI[x[0]],22)}</span><small>${pn(x[0],x[1],dateOf(dd))}</small><b>${fmtT(P[x[0]])}</b></div>`).join('')+'</div>'+gapBlock(P)+sunArc(dd,P);
+function prayerCard(dd,P,PD,tm){const c=S.cfg||DEF.cfg;PD=PD||dateOf(dd);
+let h='<div class="card"><div class="row" style="margin-top:0"><b class="ct">'+ico('sunrise',18)+'مواقيت الصلاة'+(tm?' — غدًا '+DAYS.find(x=>x.d===PD.getDay()).n:'')+'</b><span>'+esc(loc().name)+'</span></div><div class="ptg">'+NAMES.map(x=>`<div class="pt ${x[0]}"><span class="pti">${ico(PTI[x[0]],22)}</span><small>${pn(x[0],x[1],PD)}</small><b>${fmtT(P[x[0]])}</b></div>`).join('')+'</div>'+gapBlock(P)+sunArc(dd,P);
 {const d=duha(P);h+=`<div class="st" style="text-align:center;margin-top:8px">وقت صلاة الضحى: من <b>${fmtT(d.s)}</b> إلى <b>${fmtT(d.e)}</b></div>`}
 {const l=lastThird(dateOf(dd));h+=`<div class="st" style="text-align:center">الثلث الأخير من الليل: من <b>${fmtT(l.s)}</b> إلى الفجر <b>${fmtT(l.e)}</b></div>`}
 {const q=qibla();h+=`<div class="st" style="text-align:center">${ico('compass',16)} اتجاه القبلة: <b>${Math.round(q)}°</b> من الشمال مع عقارب الساعة (${DIRS[Math.round(q/45)%8]}) <span class="qb" style="transform:rotate(${Math.round(q)}deg)">${ico('arrow',18)}</span></div>`}
@@ -992,7 +992,7 @@ let h=`<div class="hero"><div class="hl"><svg class="hlogo" width="52" height="5
 h+=(JU.tmx?tmPanel(dd):'')+bkBanner()+fastBanner()+'<div class="card" id="now">'+nowInner()+'</div>';
 h+='<div class="tabs">'+DAYS.map(x=>`<button class="tab ${x.d===dd?'on':''} ${x.d===today?'today':''}" data-a="tab" data-d="${x.d}">${x.n}<small>${pct(x.d)}%</small></button>`).join('')+'</div>';
 h+=`<div class="card"><div class="row"><b>تقدم ${DAYS.find(x=>x.d===dd).n}</b><span>${a} / ${b} (${p}%)</span></div><div class="bar"><i style="width:${p}%"></i></div><div class="row"><span>تقدم الأسبوع</span><span>${wp}%</span></div><div class="bar g"><i style="width:${wp}%"></i></div>${p===100?'<div class="msg">ما شاء الله! خلصت كل مهام اليوم، تقبّل الله</div>':''}<div class="tools" style="margin-top:10px">${sk?`<span class="fire">✦ ${sk} يوم متتالي (80%+)</span>`:''}<button class="b" data-a="hide">${L.hide?'إظهار المنجز':'إخفاء المنجز'}</button><button class="b" data-a="x_simple" aria-pressed="${SM}">${SM?'العرض الكامل':'عرض اليوم المبسّط'}</button><button class="b p" data-a="x_print">${ico('j_print',14)} طباعة ورقة اليوم</button><button class="b" data-a="edit">${editMode?'تم التعديل':'تعديل المهام'}</button><button class="b" data-a="reset">${pend?'اضغط تاني للتأكيد':'تصفير اليوم'}</button></div></div>`;
-const PTt=prayerTimes(dateOf(dd)),LT=lastThird(dateOf(dd));h+=prayerCard(dd,PTt);
+const PTt=prayerTimes(dateOf(dd)),LT=lastThird(dateOf(dd));{let PD=dateOf(dd),PP=PTt,tm=false;const nw=new Date();if(dd===nw.getDay()&&nw.getHours()+nw.getMinutes()/60>=PTt.isha){PD=new Date(nw.getFullYear(),nw.getMonth(),nw.getDate()+1);PP=prayerTimes(PD);tm=true}h+=prayerCard(dd,PP,PD,tm)}
 h+='<div class="grid'+(SM?' one':'')+'"><main class="card">';
 if(editMode)h+='<div class="st" style="margin:4px 0">وضع التعديل: عدّل اسم المهمة أو هدفها أو اسم القسم. «حذف نهائي» يزيلها فعليًا من قائمتك. أما «لهذا اليوم/أسبوع/شهر» فتخفيها مؤقتًا ثم تعود. وفي كل قسم زر لإضافة مهمة جديدة، وفي الأسفل «قسم جديد». «استرجاع الأصل» يرجّع الإعداد الأصلي.</div>';
 catsM(dd,editMode).forEach(c=>{
@@ -1032,7 +1032,7 @@ h+=pmCard()+wordsCard()+memCard()+bkCard()+whCard()+rvCard()+fmCard()+mnCard();
 h+=arCard();
 h+='<div class="card"><b class="ct">'+ico('save',18)+'نسخة احتياطية</b><div class="tools" style="margin-top:8px"><button class="b" data-a="exp">تصدير</button><button class="b" data-a="imp">استيراد</button></div><div id="bkl">'+bkHtml()+'</div><div class="st" id="nm"></div><div class="jxp" id="pwa"></div></div>';
 h+='</aside>'}h+='</div>';
-h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 60)</span></div>';
+h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 61)</span></div>';
 $('#app').innerHTML=h;
 const nb=$('#nb');if(nb)nb.oninput=()=>{S.notes[dd]=nb.value;touch()};
 document.querySelectorAll('input[id^=nt_]').forEach(nt=>{nt.onkeydown=e=>{if(e.key==='Enter')addTask(nt.id.slice(3))}});const nc=$('#ncat');if(nc)nc.onkeydown=e=>{if(e.key==='Enter')newCat()};
