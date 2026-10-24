@@ -1,5 +1,5 @@
 /* عامل الخدمة: يتيح فتح البرنامج بلا إنترنت. بياناتك تُحفظ في الجهاز وتُزامَن عند عودة الاتصال. */
-const V='wp-v48';
+const V='wp-v59';
 const SHELL=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-maskable-512.png'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(V).then(c=>Promise.all(SHELL.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting()));
