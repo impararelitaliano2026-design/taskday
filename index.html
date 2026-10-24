@@ -695,7 +695,10 @@ if(norm())S.ts=Date.now();
 saveLocal();
 const stTxt={local:'محفوظ على هذا الجهاز فقط',ok:'✓ متزامن (اضغط هنا للخروج)',sync:'جاري المزامنة…',err:'تعذرت المزامنة (البيانات محفوظة هنا)'};
 function setSt(x){st=x;const e=$('#st');if(e)e.textContent=stTxt[x]}
-function push(){if(!ref)return;clearTimeout(pt);pt=setTimeout(()=>{setSt('sync');const sn=clone(S);try{const kb=Math.round(JSON.stringify(sn).length/1024);if(kb>700&&!window.__szw){window.__szw=1;showToast('حجم بياناتك '+kb+' ك.ب وقارب حد المزامنة (1 ميجا). صدّر نسخة احتياطية وقلّل الأرشيف')}}catch(e){}ref.set(sn).then(()=>{setSt('ok');BASE=sn;saveBase()}).catch(()=>setSt('err'))},700)}
+function push(){if(!ref)return;clearTimeout(pt);pt=setTimeout(()=>{setSt('sync');const sn=clone(S);try{const kb=Math.round(JSON.stringify(sn).length/1024);if(kb>700&&!window.__szw){window.__szw=1;showToast('حجم بياناتك '+kb+' ك.ب وقارب حد المزامنة (1 ميجا). صدّر نسخة احتياطية وقلّل الأرشيف')}}catch(e){}try{ref.set(fsEnc(sn)).then(()=>{setSt('ok');BASE=sn;saveBase()}).catch(e=>{console.warn('sync',e);setSt('err')})}catch(e){console.warn('sync',e);setSt('err')}},700)}
+/* Firestore لا يقبل قائمة داخل قائمة: نغلّف القوائم الداخلية عند الرفع ونفكّها عند الاستلام */
+function fsEnc(v){if(Array.isArray(v))return v.map(x=>Array.isArray(x)?{__a:fsEnc(x)}:fsEnc(x));if(v&&typeof v==='object'){const o={};for(const k in v)if(v[k]!==undefined)o[k]=fsEnc(v[k]);return o}return v}
+function fsDec(v){if(Array.isArray(v))return v.map(fsDec);if(v&&typeof v==='object'){const k=Object.keys(v);if(k.length===1&&k[0]==='__a'&&Array.isArray(v.__a))return v.__a.map(fsDec);const o={};k.forEach(x=>o[x]=fsDec(v[x]));return o}return v}
 let arT=null;function touch(dd){dd=dd===undefined?sel:dd;S.ts=Date.now();clearTimeout(arT);arT=setTimeout(()=>{try{arcSnap();saveLocal();push()}catch(e){}},4000);S.log[dkey(dd)]=pct(dd);const ks=Object.keys(S.log).sort();while(ks.length>120)delete S.log[ks.shift()];try{xStat()}catch(e){}saveLocal();push()}
 function applyTheme(){if(L.theme)document.documentElement.setAttribute('data-theme',L.theme);else document.documentElement.removeAttribute('data-theme')}
 function dur(n){if(!n)return 0;if(/نصف ساعة/.test(n))return 30;if(/ربع ساعة/.test(n))return 15;const m=/(\d+) دقيقة/.exec(n);if(m)return +m[1];if(/ساعة/.test(n))return 60;return 0}
@@ -1029,7 +1032,7 @@ h+=pmCard()+wordsCard()+memCard()+bkCard()+whCard()+rvCard()+fmCard()+mnCard();
 h+=arCard();
 h+='<div class="card"><b class="ct">'+ico('save',18)+'نسخة احتياطية</b><div class="tools" style="margin-top:8px"><button class="b" data-a="exp">تصدير</button><button class="b" data-a="imp">استيراد</button></div><div id="bkl">'+bkHtml()+'</div><div class="st" id="nm"></div><div class="jxp" id="pwa"></div></div>';
 h+='</aside>'}h+='</div>';
-h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 59)</span></div>';
+h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 60)</span></div>';
 $('#app').innerHTML=h;
 const nb=$('#nb');if(nb)nb.oninput=()=>{S.notes[dd]=nb.value;touch()};
 document.querySelectorAll('input[id^=nt_]').forEach(nt=>{nt.onkeydown=e=>{if(e.key==='Enter')addTask(nt.id.slice(3))}});const nc=$('#ncat');if(nc)nc.onkeydown=e=>{if(e.key==='Enter')newCat()};
@@ -2261,7 +2264,7 @@ signed=true;ov.style.display='none';
 ref=fs.doc('planners/'+u.uid);loadBase(u.uid);setSt('sync');
 unsub=ref.onSnapshot(snap=>{
 if(!snap.exists&&snap.metadata.fromCache)return;
-const r=snap.exists?clone(snap.data()):null;
+const r=snap.exists?fsDec(clone(snap.data())):null;
 if(!r){push();return}
 if(snap.metadata.hasPendingWrites)return;
 syncIn(r)},()=>setSt('err'))});
