@@ -1032,12 +1032,44 @@ h+=pmCard()+wordsCard()+memCard()+bkCard()+whCard()+rvCard()+fmCard()+mnCard();
 h+=arCard();
 h+='<div class="card"><b class="ct">'+ico('save',18)+'نسخة احتياطية</b><div class="tools" style="margin-top:8px"><button class="b" data-a="exp">تصدير</button><button class="b" data-a="imp">استيراد</button></div><div id="bkl">'+bkHtml()+'</div><div class="st" id="nm"></div><div class="jxp" id="pwa"></div></div>';
 h+='</aside>'}h+='</div>';
-h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 61)</span></div>';
-$('#app').innerHTML=h;
+h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 62)</span></div>';
+morphApp($('#app'),h);
 const nb=$('#nb');if(nb)nb.oninput=()=>{S.notes[dd]=nb.value;touch()};
 document.querySelectorAll('input[id^=nt_]').forEach(nt=>{nt.onkeydown=e=>{if(e.key==='Enter')addTask(nt.id.slice(3))}});const nc=$('#ncat');if(nc)nc.onkeydown=e=>{if(e.key==='Enter')newCat()};
 }
 
+/* ---- تحديث جزئي: نقارن الصفحة الجديدة بالحالية ونغيّر المختلف فقط ---- */
+function mKey(n){return n.nodeType===1?(n.id?'#'+n.id:(n.tagName==='DETAILS'&&n.getAttribute('data-c')?'c:'+n.getAttribute('data-c'):'')):''}
+function mSame(a,b){return a.nodeType===b.nodeType&&(a.nodeType!==1||(a.tagName===b.tagName&&(a.tagName!=='INPUT'||a.type===b.getAttribute('type')||(!b.getAttribute('type')&&a.type==='text'))))}
+function mAttrs(a,b){const ba=b.attributes;for(let i=0;i<ba.length;i++){const x=ba[i];if(a.getAttribute(x.name)!==x.value)a.setAttribute(x.name,x.value)}const aa=a.attributes;for(let i=aa.length-1;i>=0;i--){const n=aa[i].name;if(!b.hasAttribute(n))a.removeAttribute(n)}}
+function mNode(a,b){if(a.nodeType!==1){if(a.nodeValue!==b.nodeValue)a.nodeValue=b.nodeValue;return}
+if(a.isEqualNode(b))return;
+const tg=a.tagName,wo=tg==='DETAILS'&&!b.getAttribute('data-c')?a.open:null;
+mAttrs(a,b);
+if(wo!==null&&a.open!==wo)a.open=wo;
+if(tg==='INPUT'){if(a.type==='checkbox'||a.type==='radio'){const c=b.hasAttribute('checked');if(a.checked!==c)a.checked=c}else{const v=b.getAttribute('value')||'';if(a.value!==v)a.value=v}return}
+if(tg==='TEXTAREA'){const v=b.textContent;if(a.textContent!==v)a.textContent=v;if(a.value!==v)a.value=v;return}
+if(a.classList.contains('vz')||a.id==='fx3')return;
+mKids(a,b);
+if(tg==='SELECT'){let k=0;const o=b.querySelectorAll('option');for(let i=0;i<o.length;i++)if(o[i].hasAttribute('selected')){k=i;break}if(a.selectedIndex!==k)a.selectedIndex=k}}
+function mKids(a,b){const nk=new Set();for(let c=b.firstChild;c;c=c.nextSibling){const k=mKey(c);if(k)nk.add(k)}
+const km={};for(let c=a.firstChild;c;c=c.nextSibling){const k=mKey(c);if(k&&!km[k])km[k]=c}
+let o=a.firstChild,n=b.firstChild;
+while(n){const nx=n.nextSibling,k=mKey(n);
+while(o&&mKey(o)&&!nk.has(mKey(o))){const r=o.nextSibling;a.removeChild(o);o=r}
+let m=null;
+if(k){const c=km[k];if(c&&c.parentNode===a&&mSame(c,n)){m=c;delete km[k];if(m!==o)a.insertBefore(m,o);else o=o.nextSibling}}
+else if(o&&!mKey(o)&&mSame(o,n)){m=o;o=o.nextSibling}
+if(m)mNode(m,n);else a.insertBefore(n,o);
+n=nx}
+while(o){const r=o.nextSibling;a.removeChild(o);o=r}}
+function mForms(r){r.querySelectorAll('input,textarea,select').forEach(a=>{const tg=a.tagName;
+if(tg==='INPUT'){if(a.type==='checkbox'||a.type==='radio'){const c=a.hasAttribute('checked');if(a.checked!==c)a.checked=c}else if(a.type!=='file'){const v=a.getAttribute('value')||'';if(a.value!==v)a.value=v}}
+else if(tg==='TEXTAREA'){const v=a.textContent;if(a.value!==v)a.value=v}
+else{let k=-1;for(let i=0;i<a.options.length;i++)if(a.options[i].hasAttribute('selected')){k=i;break}if(k<0)k=0;if(a.selectedIndex!==k&&a.options.length)a.selectedIndex=k}})}
+let MORPH=true;
+function morphApp(root,h){if(!MORPH||!root.firstChild){root.innerHTML=h;return}
+try{root.querySelectorAll('#qnav,#fcm').forEach(e=>e.remove());const t=document.createElement('template');t.innerHTML=h;mKids(root,t.content);mForms(root)}catch(e){console.warn('morph',e);root.innerHTML=h}}
 /* ---- الأهداف ---- */
 const GCAT={din:['دين وعبادة','mosque','--c-q'],ilm:['علم ومعرفة','cap','--c-s'],lugha:['اللغات','globe','--c-i'],sihha:['صحة وبدن','heart','--c-z'],usra:['أسرة وصلة رحم','home','--c-c'],amal:['عمل ورزق','briefcase','--c-g'],akhlaq:['تزكية وأخلاق','leaf','--c-a'],mal:['مال وصدقة','gem','--c-n']};
 const GHZ={w:['أسبوعي',7],m:['شهري',30],q:['ربع سنوي',90],y:['سنوي',365],l:['بعيد المدى',0]};
@@ -1212,7 +1244,10 @@ const L0=D.length-1,lb=d=>d.w==='الآن'?d.w:d.w.slice(5).replace('-','/');
 svg.append('text').attr('class','m').attr('x',x(0)).attr('y',H-6).attr('text-anchor','middle').style('font-size','9px').text(lb(D[0]));
 svg.append('text').attr('class','m').attr('x',x(L0)).attr('y',H-6).attr('text-anchor','middle').style('font-size','9px').text('الآن');
 svg.append('text').attr('class','h').attr('x',x(L0)).attr('y',y(D[L0].p)-10).attr('text-anchor','middle').style('font-size','10px').style('font-weight','800').text(D[L0].p+'%')}
-function fxCharts(){if(!window.d3)return;const M={sun:fxSun,heat:fxHeat,rad:e=>fxRings(e,FXD.rad),gr:e=>fxRings(e,FXD.gr),trend:fxTrend,mood:fxMood};document.querySelectorAll('.vz[data-vz]').forEach(el=>{try{M[el.dataset.vz](el)}catch(e){}})}
+function fxCharts(){if(!window.d3)return;const M={sun:fxSun,heat:fxHeat,rad:e=>fxRings(e,FXD.rad),gr:e=>fxRings(e,FXD.gr),trend:fxTrend,mood:fxMood};const th=(L.theme||'')+(matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'d':'l')+new Date().toDateString();
+document.querySelectorAll('.vz[data-vz]').forEach(el=>{const n=el.dataset.vz;let k=null;try{k=JSON.stringify(FXD[n])+'|'+th+'|'+el.clientWidth}catch(e){}
+if(k&&el.__k===k&&el.firstChild){if(el.__hd)el.parentNode.style.display='none';return}
+try{M[n](el)}catch(e){}el.__k=k;el.__hd=el.parentNode&&el.parentNode.style.display==='none'})}
 /* نجمة ثمانية ثلاثية الأبعاد (three.js) */
 const FX3={cv:null,fail:false};
 function fxStarInit(){const T=THREE,cv=document.createElement('canvas'),r=new T.WebGLRenderer({canvas:cv,alpha:true,antialias:true});
