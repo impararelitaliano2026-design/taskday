@@ -538,6 +538,11 @@ body.fc main>*:not(.cat):not(#fcm){display:none!important}
 body.fc .cat .it.dn{display:none!important}
 body.fc .cat>summary{pointer-events:none}
 body.fc .cat>summary .chev,body.fc .cat>summary::after{display:none!important}
+/* ===== v64: الأقسام الظاهرة ===== */
+.secp{margin-top:8px;text-align:right}.secp .st{color:#fff;opacity:.85;margin-bottom:6px}
+.secg{display:flex;flex-wrap:wrap;gap:6px}
+.hero .secg .b{font-size:.8rem;min-height:36px;padding:4px 10px}
+.hero .secg .b.p{background:var(--gold,#FCA311);color:#14213D}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@400;700&family=Aref+Ruqaa+Ink:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#14213d">
@@ -762,10 +767,10 @@ setInterval(alertTick,5000);
 function gapBlock(P){const G=[['fajr','dhuhr','الفجر','الظهر'],['dhuhr','asr','الظهر','العصر'],['asr','maghrib','العصر','المغرب'],['maghrib','isha','المغرب','العشاء'],['isha','fajr','العشاء','الفجر']];
 return '<div class="gpt"><b class="gph">'+ico('timer',16)+'المدة بين الصلوات</b><div class="gpg">'+G.map(g=>{let d=P[g[1]]-P[g[0]];if(d<=0)d+=24;return `<div class="gpc ${g[0]}"><small>بين ${g[2]} و${g[3]}${g[0]==='isha'?' (التالي)':''}</small><b>${durTxt(d)}</b></div>`}).join('')+'</div></div>'}
 function prayerCard(dd,P,PD,tm){const c=S.cfg||DEF.cfg;PD=PD||dateOf(dd);
-let h='<div class="card"><div class="row" style="margin-top:0"><b class="ct">'+ico('sunrise',18)+'مواقيت الصلاة'+(tm?' — غدًا '+DAYS.find(x=>x.d===PD.getDay()).n:'')+'</b><span>'+esc(loc().name)+'</span></div><div class="ptg">'+NAMES.map(x=>`<div class="pt ${x[0]}"><span class="pti">${ico(PTI[x[0]],22)}</span><small>${pn(x[0],x[1],PD)}</small><b>${fmtT(P[x[0]])}</b></div>`).join('')+'</div>'+gapBlock(P)+sunArc(dd,P);
-{const d=duha(P);h+=`<div class="st" style="text-align:center;margin-top:8px">وقت صلاة الضحى: من <b>${fmtT(d.s)}</b> إلى <b>${fmtT(d.e)}</b></div>`}
-{const l=lastThird(dateOf(dd));h+=`<div class="st" style="text-align:center">الثلث الأخير من الليل: من <b>${fmtT(l.s)}</b> إلى الفجر <b>${fmtT(l.e)}</b></div>`}
-{const q=qibla();h+=`<div class="st" style="text-align:center">${ico('compass',16)} اتجاه القبلة: <b>${Math.round(q)}°</b> من الشمال مع عقارب الساعة (${DIRS[Math.round(q/45)%8]}) <span class="qb" style="transform:rotate(${Math.round(q)}deg)">${ico('arrow',18)}</span></div>`}
+let h='<div class="card"><div class="row" style="margin-top:0"><b class="ct">'+ico('sunrise',18)+'مواقيت الصلاة'+(tm?' — غدًا '+DAYS.find(x=>x.d===PD.getDay()).n:'')+'</b><span>'+esc(loc().name)+'</span></div><div class="ptg">'+NAMES.map(x=>`<div class="pt ${x[0]}"><span class="pti">${ico(PTI[x[0]],22)}</span><small>${pn(x[0],x[1],PD)}</small><b>${fmtT(P[x[0]])}</b></div>`).join('')+'</div>'+(secOn('ptx')?gapBlock(P)+sunArc(dd,P):'');
+if(secOn('ptx')){const d=duha(P);h+=`<div class="st" style="text-align:center;margin-top:8px">وقت صلاة الضحى: من <b>${fmtT(d.s)}</b> إلى <b>${fmtT(d.e)}</b></div>`}
+if(secOn('ptx')){const l=lastThird(dateOf(dd));h+=`<div class="st" style="text-align:center">الثلث الأخير من الليل: من <b>${fmtT(l.s)}</b> إلى الفجر <b>${fmtT(l.e)}</b></div>`}
+if(secOn('ptx')){const q=qibla();h+=`<div class="st" style="text-align:center">${ico('compass',16)} اتجاه القبلة: <b>${Math.round(q)}°</b> من الشمال مع عقارب الساعة (${DIRS[Math.round(q/45)%8]}) <span class="qb" style="transform:rotate(${Math.round(q)}deg)">${ico('arrow',18)}</span></div>`}
 if(dd===new Date().getDay())h+='<div class="msg" id="np">'+npText()+'</div>';
 h+='<div class="st" id="alst" style="text-align:center">'+alTxt()+'</div>';
 h+=`<details data-c="pset" ${isOpen('pset')?'open':''}><summary>${sumHtml('pset','إعدادات المواقيت','')}</summary><div class="tools">`;
@@ -870,7 +875,13 @@ function editRow(it){const ov=(S.ov||{})[it.b];return `<div class="it ed${it.h?'
 /* ---- بطاقات الجانب ---- */
 const OPENS={};
 const isOpen=id=>L.focus?true:L.keepOpen?(L.closed[id]===undefined?false:!L.closed[id]):OPENS[id]===true;
-function det(id,title,sum,body,open){const op=isOpen(id);return `<details data-c="${id}" ${op?'open':''}><summary>${sumHtml(id,title,sum)}</summary><div class="ab">${body}</div></details>`}
+/* ---- الأقسام الظاهرة: إخفاء ما لا تستخدمه دون حذف بياناته ---- */
+const SEC=[['kh','ختمة القرآن'],['mm','الحفظ والمراجعة'],['ptx','تفاصيل المواقيت'],['ins','إشراقة اليوم'],['gl','أهدافي'],['pm','مؤقّت التركيز'],['ag','أجندتي'],['hb','عاداتي'],['fm','صلة الرحم'],['jr','يوميات اليوم'],['hl','صحتي'],['mn','المال والصدقة'],['wd','دفتر كلمات الإيطالي'],['bk','كتب قرأتها'],['rp','التقرير والرسوم البيانية'],['wh','عجلة الحياة'],['rv','المراجعات'],['nb','ملاحظات اليوم']];
+const SECD=Object.fromEntries(SEC),SEC_OFF0={ins:1,ag:1,hb:1,jr:1,hl:1,mn:1,wh:1,rv:1};
+const secOff=()=>S.sec&&typeof S.sec==='object'?S.sec:SEC_OFF0;
+const secOn=id=>!secOff()[id];
+function secPanel(){return `<div class="secp" role="group" aria-label="الأقسام الظاهرة"><div class="st">اختر الأقسام التي تظهر في الصفحة. المخفيّ تبقى بياناته محفوظة.</div><div class="secg">${SEC.map(x=>`<button class="b${secOn(x[0])?' p':''}" data-a="x_insec" data-k="${x[0]}" aria-pressed="${secOn(x[0])}">${secOn(x[0])?'✓ ':''}${x[1]}</button>`).join('')}</div></div>`}
+function det(id,title,sum,body,open){if(SECD[id]&&!secOn(id))return '';const op=isOpen(id);return `<details data-c="${id}" ${op?'open':''}><summary>${sumHtml(id,title,sum)}</summary><div class="ab">${body}</div></details>`}
 function reportCard(){const r=weekReport(),wk=r.wk&&CATN[r.wk]?CATN[r.wk]:'—';
 return `<div class="rpg"><div><small>الركعات</small><b>${r.rk}</b></div><div><small>أجزاء القرآن</small><b>${r.jz}</b></div><div><small>الأذكار (مرات)</small><b>${r.dh}</b></div><div><small>أيام الالتزام (80%+)</small><b>${r.dy}/7</b></div></div><div class="st" style="margin-top:6px">أضعف مجال هذا الأسبوع: <b>${wk}</b> · أذكار مكتملة: ${r.ad}</div>`}
 function khCard(){const k=S.kh||{pos:0,done:0,log:{}},pos=k.pos||0,rem=30-pos;
@@ -988,7 +999,7 @@ if(!isNaN(sm)&&!fired[fk]&&cur>=sm&&cur<sm+1.5){fired[fk]=1;chimeSoft();showToas
 function render(){
 applyTheme();const SM=!!L.simple;
 const dd=sel,[a,b]=stat(dd),p=pct(dd),wp=weekPct(),today=new Date().getDay(),sk=streak();
-let h=`<div class="hero"><div class="hl"><svg class="hlogo" width="52" height="52" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="#fca311"/><circle cx="33" cy="22" r="19" fill="currentColor"/><polygon points="38,9 40.2,14.6 46,16 40.2,17.4 38,23 35.8,17.4 30,16 35.8,14.6" fill="#fca311"/></svg><div class="hmain"><div class="hrow">${ORN}<div class="bsm">بسم الله الرحمن الرحيم</div>${ORN.replace('class="orn"','class="orn m"')}</div><h1>برنامجي الأسبوعي</h1><div class="hrow">${ORN}${hjLine()}${ORN.replace('class="orn"','class="orn m"')}</div></div></div><div class="fx3" id="fx3" aria-hidden="true"></div>${tmHero(dd)}${insHero()}<div class="tools"><span id="st" class="st">${stTxt[st]}</span><button class="b" data-a="x_inl" aria-expanded="${!!JU.inl}" aria-label="أدوات">أدوات ${JU.inl?'▴':'▾'}</button><button class="b" data-a="focus" aria-pressed="${!!L.focus}">${L.focus?'خروج من التركيز':'تركيز'}</button><button class="b" data-a="theme" aria-label="تبديل المظهر">◐</button></div>${JU.inl?`<div class="tools"><button class="b" data-a="x_print" aria-label="طباعة ورقة اليوم">${ico('j_print',16)} طباعة</button><button class="b" data-a="x_arjump" aria-label="أرشيف الأسابيع">أرشيف الأسابيع</button><button class="b" data-a="x_inm" aria-label="إدارة الحكم والأبيات">إدارة الحِكم والأبيات</button></div>${JU.inm?insManage():''}`:''}</div>`;
+let h=`<div class="hero"><div class="hl"><svg class="hlogo" width="52" height="52" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="#fca311"/><circle cx="33" cy="22" r="19" fill="currentColor"/><polygon points="38,9 40.2,14.6 46,16 40.2,17.4 38,23 35.8,17.4 30,16 35.8,14.6" fill="#fca311"/></svg><div class="hmain"><div class="hrow">${ORN}<div class="bsm">بسم الله الرحمن الرحيم</div>${ORN.replace('class="orn"','class="orn m"')}</div><h1>برنامجي الأسبوعي</h1><div class="hrow">${ORN}${hjLine()}${ORN.replace('class="orn"','class="orn m"')}</div></div></div><div class="fx3" id="fx3" aria-hidden="true"></div>${tmHero(dd)}${secOn('ins')?insHero():''}<div class="tools"><span id="st" class="st">${stTxt[st]}</span><button class="b" data-a="x_inl" aria-expanded="${!!JU.inl}" aria-label="أدوات">أدوات ${JU.inl?'▴':'▾'}</button><button class="b" data-a="focus" aria-pressed="${!!L.focus}">${L.focus?'خروج من التركيز':'تركيز'}</button><button class="b" data-a="theme" aria-label="تبديل المظهر">◐</button></div>${JU.inl?`<div class="tools"><button class="b" data-a="x_print" aria-label="طباعة ورقة اليوم">${ico('j_print',16)} طباعة</button><button class="b" data-a="x_arjump" aria-label="أرشيف الأسابيع">أرشيف الأسابيع</button><button class="b" data-a="x_insp" aria-expanded="${!!JU.secp}">الأقسام الظاهرة</button>${secOn('ins')?`<button class="b" data-a="x_inm" aria-label="إدارة الحكم والأبيات">إدارة الحِكم والأبيات</button>`:''}</div>${JU.secp?secPanel():''}${JU.inm&&secOn('ins')?insManage():''}`:''}</div>`;
 h+=(JU.tmx?tmPanel(dd):'')+bkBanner()+fastBanner()+'<div class="card" id="now">'+nowInner()+'</div>';
 h+='<div class="tabs">'+DAYS.map(x=>`<button class="tab ${x.d===dd?'on':''} ${x.d===today?'today':''}" data-a="tab" data-d="${x.d}">${x.n}<small>${pct(x.d)}%</small></button>`).join('')+'</div>';
 h+=`<div class="card"><div class="row"><b>تقدم ${DAYS.find(x=>x.d===dd).n}</b><span>${a} / ${b} (${p}%)</span></div><div class="bar"><i style="width:${p}%"></i></div><div class="row"><span>تقدم الأسبوع</span><span>${wp}%</span></div><div class="bar g"><i style="width:${wp}%"></i></div>${p===100?'<div class="msg">ما شاء الله! خلصت كل مهام اليوم، تقبّل الله</div>':''}<div class="tools" style="margin-top:10px">${sk?`<span class="fire">✦ ${sk} يوم متتالي (80%+)</span>`:''}<button class="b" data-a="hide">${L.hide?'إظهار المنجز':'إخفاء المنجز'}</button><button class="b" data-a="x_simple" aria-pressed="${SM}">${SM?'العرض الكامل':'عرض اليوم المبسّط'}</button><button class="b p" data-a="x_print">${ico('j_print',14)} طباعة ورقة اليوم</button><button class="b" data-a="edit">${editMode?'تم التعديل':'تعديل المهام'}</button><button class="b" data-a="reset">${pend?'اضغط تاني للتأكيد':'تصفير اليوم'}</button></div></div>`;
@@ -1025,14 +1036,14 @@ if(editMode)h+='<div class="add" style="margin:12px 0 0"><input type="text" id="
 h+='</main>';if(!SM){h+='<aside>';
 h+=det('rp','۞ تقرير الأسبوع','حتى الآن',reportCard(),true);
 h+=det('kh','۞ ختمة القرآن',((S.kh&&S.kh.pos)||0)+'/30',khCard(),true);
-h+='<div class="card"><b class="ct">'+ico('chart',18)+'إنجاز الأسبوع حسب المجال</b>'+radBox()+catStats().map(o=>{const q=Math.round(o.a/o.b*100);return `<div class="row"><span><i class="dt" style="background:var(--c-${o.id},var(--c-c))"></i>${esc(o.t)}</span><span>${q}%</span></div><div class="bar"><i style="width:${q}%;background:var(--c-${o.id},var(--c-c))"></i></div>`}).join('')+'</div>';
-h+=heatCard();
-h+=`<div class="card"><b class="ct">${ico('note',18)}ملاحظات اليوم</b><textarea id="nb" placeholder="اكتب ملاحظاتك هنا…">${esc(S.notes[dd]||'')}</textarea></div>`;
+if(secOn('rp'))h+='<div class="card"><b class="ct">'+ico('chart',18)+'إنجاز الأسبوع حسب المجال</b>'+radBox()+catStats().map(o=>{const q=Math.round(o.a/o.b*100);return `<div class="row"><span><i class="dt" style="background:var(--c-${o.id},var(--c-c))"></i>${esc(o.t)}</span><span>${q}%</span></div><div class="bar"><i style="width:${q}%;background:var(--c-${o.id},var(--c-c))"></i></div>`}).join('')+'</div>';
+if(secOn('rp'))h+=heatCard();
+if(secOn('nb'))h+=`<div class="card"><b class="ct">${ico('note',18)}ملاحظات اليوم</b><textarea id="nb" placeholder="اكتب ملاحظاتك هنا…">${esc(S.notes[dd]||'')}</textarea></div>`;
 h+=pmCard()+wordsCard()+memCard()+bkCard()+whCard()+rvCard()+fmCard()+mnCard();
 h+=arCard();
 h+='<div class="card"><b class="ct">'+ico('save',18)+'نسخة احتياطية</b><div class="tools" style="margin-top:8px"><button class="b" data-a="exp">تصدير</button><button class="b" data-a="imp">استيراد</button></div><div id="bkl">'+bkHtml()+'</div><div class="st" id="nm"></div><div class="jxp" id="pwa"></div></div>';
 h+='</aside>'}h+='</div>';
-h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 63)</span></div>';
+h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 64)</span></div>';
 morphApp($('#app'),h);
 const nb=$('#nb');if(nb)nb.oninput=()=>{S.notes[dd]=nb.value;touch()};
 document.querySelectorAll('input[id^=nt_]').forEach(nt=>{nt.onkeydown=e=>{if(e.key==='Enter')addTask(nt.id.slice(3))}});const nc=$('#ncat');if(nc)nc.onkeydown=e=>{if(e.key==='Enter')newCat()};
@@ -1938,6 +1949,8 @@ if(a==='inq'){JU.inq=+d.n;render();return true}
 if(a==='inm'){JU.inm=!JU.inm;JU.inl=true;render();return true}
 if(a==='inx'){JU.inx=!JU.inx;render();return true}
 if(a==='inl'){JU.inl=!JU.inl;render();return true}
+if(a==='insp'){JU.secp=!JU.secp;render();return true}
+if(a==='insec'){const k=d.k;if(!SECD[k])return true;S.sec=Object.assign({},secOff());if(S.sec[k])delete S.sec[k];else S.sec[k]=1;touch();render();return true}
 if(a==='inwz'){const L=(JU.wzt||'').split('\n').map(x=>x.trim()).filter(Boolean);if(!L.length){showToast('اكتب حكمة أولًا');return true}S.ins.w=S.ins.w.concat(L.map(x=>x.slice(0,400))).slice(0,300);JU.wzt='';touch();render();showToast('أُضيفت '+L.length);return true}
 if(a==='inwzd'){S.ins.w.splice(+d.i,1);touch();render();return true}
 if(a==='inpv'){const t=(JU.pvt||'').trim();if(!t){showToast('اكتب البيت');return true}const pr=t.split('//').map(x=>x.trim());S.ins.p.push({b:+JU.pvb||0,a:pr[0],c:pr[1]||'',s:(JU.pvs||'').trim()});S.ins.p=S.ins.p.slice(-400);JU.pvt='';touch();render();return true}
