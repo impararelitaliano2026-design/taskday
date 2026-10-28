@@ -549,6 +549,10 @@ body.fc .cat>summary .chev,body.fc .cat>summary::after{display:none!important}
 .dch{font:inherit;font-size:.8rem;font-weight:700;border:1.5px solid color-mix(in srgb,var(--cc,var(--ac)) 55%,transparent);background:var(--card);color:var(--tx);border-radius:12px;padding:4px 10px;min-height:36px;cursor:pointer;touch-action:manipulation}
 .dch.on{background:var(--cc,var(--ac));color:var(--ct,#fff);border-color:transparent}
 .ndays.ed2{margin:0 10px 8px}
+/* ===== v67: اسم اللغة ===== */
+.lgn{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 10px 4px}
+.lgn label{font-size:.85rem;font-weight:700;color:var(--mut)}
+.lgn input{flex:1;min-width:140px}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@400;700&family=Aref+Ruqaa+Ink:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#14213d">
@@ -624,7 +628,7 @@ const COMMON=[
 {id:'z',t:'۞ ورد الذكر',items:[['الاستغفار','1000 مرة',1000],['الحوقلة','1000 مرة',1000],['الصلاة على النبي ﷺ','1000 مرة',1000]]},
 {id:'a',t:'۞ الأذكار',items:[['أذكار الاستيقاظ'],['أذكار الصباح'],['أذكار المساء'],['أذكار النوم']]},
 {id:'s',t:'۞ القراءة والعلم',items:[['القراءة','نصف ساعة'],['التجويد','ربع ساعة'],['درس السيرة','نصف ساعة'],['الشعر','ربع ساعة (حفظ بيت ومراجعة المحفوظ)']]},
-{id:'i',t:'۞ اللغة الإيطالية',items:[['حفظ 3 كلمات من قاموس الألف الأكثر شيوعا'],['حفظ 3 كلمات من منهج lingohut'],['استماع','15 دقيقة على الأقل'],['Duolingo'],['Busuu']]}
+{id:'i',t:'۞ تعلم اللغة',items:[]}
 ];
 const RKP=[2,3,2,2,2,2,4,2,2,4,2,3,2,2,4,2];
 const $=s=>document.querySelector(s);
@@ -660,7 +664,7 @@ const pushEx=(x,sc,n0)=>{const cid=(!x.cat||x.cat==='c')?'d':x.cat;(ex[cid]=ex[c
 ((S.once||{})[dkey(dd)]||[]).forEach(x=>pushEx(x,'o','مرة واحدة'));
 (S.ucat||[]).forEach(u=>o.push({id:u.id,t:u.t,items:[],u:1,ic:u.ic||guessIco(u.t)}));
 Object.keys(ex).forEach(cid=>{const c=o.find(z=>z.id===cid&&!(S.del||{})[cid])||o.find(z=>z.id==='d');if(!c)return;ex[cid].forEach(x=>c.items.push(x))});
-{const dl=S.del||{},ct=S.ctt||{};o=o.filter(c=>!dl[c.id]);o.forEach(c=>{c.items=c.items.filter(it=>it.c||!dl[it.b]);if(ct[c.id])c.t=ct[c.id]});o.forEach(c=>{c.t=c.t.replace(/^۞\s*/,'');c.ic=CAT_ICO[c.id]||'gem'})}
+{const dl=S.del||{},ct=S.ctt||{};o=o.filter(c=>!dl[c.id]);o.forEach(c=>{c.items=c.items.filter(it=>it.c||!dl[it.b]);if(ct[c.id])c.t=ct[c.id];else if(c.id==='i'&&S.lang)c.t='۞ تعلم اللغة: '+esc(S.lang)});o.forEach(c=>{c.t=c.t.replace(/^۞\s*/,'');c.ic=CAT_ICO[c.id]||'gem'})}
 {const ds=dkey(dd);o.forEach(c=>{const co=(S.cov||{})[c.id];if(hid(co,ds)){c.hc=1;c.hn=hidN(co,ds)}})}
 if(!inc)o.forEach(c=>{c.items=c.hc?[]:c.items.filter(it=>!it.h)});
 return o}
@@ -781,7 +785,7 @@ return h}
 const tdk=()=>fmt(new Date());
 const addDays=(ds,n)=>{const p=ds.split('-').map(Number);return fmt(new Date(p[0],p[1]-1,p[2]+n))};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
-const CATN={p:'الصلوات والسنن',q:'ورد القرآن',z:'ورد الذكر',a:'الأذكار وورد الذكر',s:'القراءة والعلم',i:'اللغة الإيطالية',d:'مهام اليوم',c:'المهام الإضافية'};
+const CATN={p:'الصلوات والسنن',q:'ورد القرآن',z:'ورد الذكر',a:'الأذكار وورد الذكر',s:'القراءة والعلم',i:'تعلم اللغة',d:'مهام اليوم',c:'المهام الإضافية'};
 let editMode=false,rev=null,addCat='',tmOpen='';
 /* مواعيد مهام اليوم: a = وقت ثابت، r = بعد صلاة (بالدقائق m أو حتى صلاة أخرى re) */
 const SCH={
@@ -883,7 +887,7 @@ function editRow(it){const ov=(S.ov||{})[it.b];return `<div class="it ed${it.h?'
 const OPENS={};
 const isOpen=id=>L.focus?true:L.keepOpen?(L.closed[id]===undefined?false:!L.closed[id]):OPENS[id]===true;
 /* ---- الأقسام الظاهرة: إخفاء ما لا تستخدمه دون حذف بياناته ---- */
-const SEC=[['kh','ختمة القرآن'],['mm','الحفظ والمراجعة'],['ptx','تفاصيل المواقيت'],['ins','إشراقة اليوم'],['gl','أهدافي'],['pm','مؤقّت التركيز'],['ag','أجندتي'],['hb','عاداتي'],['fm','صلة الرحم'],['jr','يوميات اليوم'],['hl','صحتي'],['mn','المال والصدقة'],['wd','دفتر كلمات الإيطالي'],['bk','كتب قرأتها'],['rp','التقرير والرسوم البيانية'],['wh','عجلة الحياة'],['rv','المراجعات'],['nb','ملاحظات اليوم']];
+const SEC=[['kh','ختمة القرآن'],['mm','الحفظ والمراجعة'],['ptx','تفاصيل المواقيت'],['ins','إشراقة اليوم'],['gl','أهدافي'],['pm','مؤقّت التركيز'],['ag','أجندتي'],['hb','عاداتي'],['fm','صلة الرحم'],['jr','يوميات اليوم'],['hl','صحتي'],['mn','المال والصدقة'],['wd','دفتر الكلمات'],['bk','كتب قرأتها'],['rp','التقرير والرسوم البيانية'],['wh','عجلة الحياة'],['rv','المراجعات'],['nb','ملاحظات اليوم']];
 const SECD=Object.fromEntries(SEC),SEC_OFF0={ins:1,ag:1,hb:1,jr:1,hl:1,mn:1,wh:1,rv:1};
 const secOff=()=>S.sec&&typeof S.sec==='object'?S.sec:SEC_OFF0;
 const secOn=id=>!secOff()[id];
@@ -909,10 +913,10 @@ const back=l==='words'?esc(x.ar)+(x.ex?`<div class="st">${esc(x.ex)}</div>`:''):
 const ok=l==='words'?'عرفتها':'راجعتها بإتقان',no=l==='words'?'نسيتها':'تحتاج مراجعة';
 return `<div class="rv"><div class="st">${rev.i+1} / ${rev.q.length}</div>${front}${(rev.sh||!back)?`<div class="rvb">${back}</div><div class="tools" style="justify-content:center"><button class="b p" data-a="revok">${ok}</button><button class="b" data-a="revno">${no}</button></div>`:`<div class="tools" style="justify-content:center"><button class="b p" data-a="revshow">${l==='words'?'أظهر المعنى':'أظهر النص'}</button></div>`}<div class="tools" style="justify-content:center;margin-top:6px"><button class="b" data-a="revend">إنهاء المراجعة</button></div></div>`}
 function wordsCard(){const w=S.words||[],due=srDue('words').length;
-let b=`<div class="add"><input type="text" id="wi" dir="ltr" placeholder="الكلمة بالإيطالية"><input type="text" id="wa" placeholder="المعنى بالعربي"></div><div class="add" style="margin-top:6px"><input type="text" id="wx" placeholder="مثال أو ملاحظة (اختياري)"><button class="b p" data-a="wadd">إضافة</button></div>`;
+let b=`<div class="add"><input type="text" id="wi" dir="ltr" placeholder="الكلمة${S.lang?' ('+esc(S.lang)+')':''}"><input type="text" id="wa" placeholder="المعنى بالعربي"></div><div class="add" style="margin-top:6px"><input type="text" id="wx" placeholder="مثال أو ملاحظة (اختياري)"><button class="b p" data-a="wadd">إضافة</button></div>`;
 b+=`<div class="tools" style="margin-top:8px">${due?`<button class="b p" data-a="revstart" data-l="words">ابدأ المراجعة (${due})</button>`:'<span class="st">لا توجد كلمات للمراجعة الآن</span>'}</div>`+revHtml('words');
 if(w.length)b+='<div class="sl">'+w.slice().reverse().slice(0,200).map(x=>`<div class="wrow"><span><b dir="ltr">${esc(x.it)}</b> — ${esc(x.ar)}<div class="st">${lvl(x.b)} · المراجعة: ${esc(x.d||'')}</div></span><button class="b x" data-a="sdel" data-l="words" data-id="${x.id}">${ico('x',14)}</button></div>`).join('')+'</div>';
-return det('wd','۞ دفتر كلمات الإيطالي',due+' للمراجعة · '+w.length+' كلمة',b,false)}
+return det('wd','۞ دفتر الكلمات'+(S.lang?' — '+esc(S.lang):''),due+' للمراجعة · '+w.length+' كلمة',b,false)}
 
 /* ---- الحفظ: قرآن بالآيات + حديث + شعر ---- */
 const SUR=('الفاتحة 7,البقرة 286,آل عمران 200,النساء 176,المائدة 120,الأنعام 165,الأعراف 206,الأنفال 75,التوبة 129,يونس 109,هود 123,يوسف 111,الرعد 43,إبراهيم 52,الحجر 99,النحل 128,الإسراء 111,الكهف 110,مريم 98,طه 135,الأنبياء 112,الحج 78,المؤمنون 118,النور 64,الفرقان 77,الشعراء 227,النمل 93,القصص 88,العنكبوت 69,الروم 60,لقمان 34,السجدة 30,الأحزاب 73,سبأ 54,فاطر 45,يس 83,الصافات 182,ص 88,الزمر 75,غافر 85,فصلت 54,الشورى 53,الزخرف 89,الدخان 59,الجاثية 37,الأحقاف 35,محمد 38,الفتح 29,الحجرات 18,ق 45,الذاريات 60,الطور 49,النجم 62,القمر 55,الرحمن 78,الواقعة 96,الحديد 29,المجادلة 22,الحشر 24,الممتحنة 13,الصف 14,الجمعة 11,المنافقون 11,التغابن 18,الطلاق 12,التحريم 12,الملك 30,القلم 52,الحاقة 52,المعارج 44,نوح 28,الجن 28,المزمل 20,المدثر 56,القيامة 40,الإنسان 31,المرسلات 50,النبأ 40,النازعات 46,عبس 42,التكوير 29,الانفطار 19,المطففين 36,الانشقاق 25,البروج 22,الطارق 17,الأعلى 19,الغاشية 26,الفجر 30,البلد 20,الشمس 15,الليل 21,الضحى 11,الشرح 8,التين 8,العلق 19,القدر 5,البينة 8,الزلزلة 8,العاديات 11,القارعة 11,التكاثر 8,العصر 3,الهمزة 9,الفيل 5,قريش 4,الماعون 7,الكوثر 3,الكافرون 6,النصر 3,المسد 5,الإخلاص 4,الفلق 5,الناس 6').split(',').map(x=>{const i=x.lastIndexOf(' ');return[x.slice(0,i),+x.slice(i+1)]});
@@ -1015,11 +1019,12 @@ h+='<div class="grid'+(SM?' one':'')+'"><main class="card">';
 if(editMode)h+='<div class="st" style="margin:4px 0">وضع التعديل: عدّل اسم المهمة أو هدفها أو اسم القسم. «حذف نهائي» يزيلها فعليًا من قائمتك. أما «لهذا اليوم/أسبوع/شهر» فتخفيها مؤقتًا ثم تعود. وفي كل قسم زر لإضافة مهمة جديدة، وفي الأسفل «قسم جديد». «استرجاع الأصل» يرجّع الإعداد الأصلي.</div>';
 catsM(dd,editMode).forEach(c=>{
 if(c.hc&&!editMode)return;
-if(!c.items.length&&c.id!=='d'&&!c.u&&!editMode)return;
+if(!c.items.length&&c.id!=='d'&&c.id!=='i'&&!c.u&&!editMode)return;
 const done=c.items.filter(it=>isDone(dd,it)).length;
 const its=c.items.filter(it=>editMode||!(L.hide&&isDone(dd,it)));
 const ui=c.u?Math.max(0,(S.ucat||[]).findIndex(u=>u.id===c.id))%6:-1;
 h+=`<details class="cat" data-c="${c.id}"${ui>=0?' data-u="'+ui+'"':''} ${isOpen(c.id)?'open':''}><summary>${sumHtml(c.id,c.t,done+'/'+c.items.length,c.items.length?done/c.items.length*100:0,c.ic)}</summary>`;
+if(c.id==='i'&&!editMode)h+=`<div class="lgn"><label for="lgname">اسم اللغة التي تتعلمها</label><input type="text" id="lgname" data-lang="1" value="${esc(S.lang||'')}" placeholder="مثال: الإيطالية" maxlength="30"></div>`;
 if(editMode)h+=`<div class="it ed${c.hc?' hd':''}"><input type="text" class="ein" data-ct="${c.id}" value="${esc(c.t)}" aria-label="اسم القسم">${c.u?`<select class="hsel" data-cic="${c.id}" aria-label="أيقونة القسم">${UIC.map(x=>`<option value="${x[0]}" ${c.ic===x[0]?'selected':''}>${x[1]}</option>`).join('')}</select>`:''}${c.hc?`<span class="ch">مخفي مؤقتًا ${c.hn}</span><button class="b" data-a="covh" data-b="${c.id}">إظهار</button>`:HSEL('c',c.id)}</div>`;
 let zsd=0;its.forEach(it=>{
 if(c.zs&&/^z\d/.test(it.id)&&!zsd){zsd=1;h+='<div class="sbh">ورد الذكر</div>'}
@@ -1036,7 +1041,7 @@ if(it.g)h+=`<span class="ctr"><b>${it.s?cnt+' ركعة':cnt+'/'+it.g}</b>${(it.s
 if(it.c)h+=`<button class="b x" data-a="del" data-id="${it.c}" data-sc="${it.sc||'w'}">${ico('x',14)}</button>`;
 h+='</div>';{const tk=it.b||it.id;if(tmOpen===tk&&!(it.u>0))h+=tmWrap(tk)}});
 if(c.id==='p'&&!editMode){const tot=c.items.reduce((a,it)=>a+(it.s?Math.max(it.r||0,val(dd,it)):(it.r||0)),0),rd=c.items.reduce((a,it)=>a+(it.s?val(dd,it):(isDone(dd,it)?(it.r||0):0)),0);h+=`<div class="rk"><div class="r1"><small>إجمالي الركعات</small><b>${tot}</b></div><div class="r2"><small>الركعات التي صليتها</small><b>${rd}</b></div></div>`}
-if((c.id==='d'&&!editMode)||addCat===c.id)h+=`<div class="add" style="margin:8px 10px 0"><input type="text" id="nt_${c.id}" placeholder="مهمة جديدة في هذا القسم…"><input type="number" min="1" class="enum" id="ng_${c.id}" placeholder="العدد (اختياري)"><input type="text" id="nn_${c.id}" placeholder="ملاحظة (اختياري)"><label class="tl">من ${tpk('id="ntm_'+c.id+'"','',1)}</label><label class="tl">إلى ${tpk('id="nte_'+c.id+'"','',1)}</label>${ndHtml(c.id)}<button class="b p" data-a="new" data-cat="${c.id}">إضافة</button></div>`;else h+=`<div style="margin:8px 10px 0"><button class="b" data-a="addopen" data-cat="${c.id}">＋ إضافة مهمة في هذا القسم</button></div>`;
+if((c.id==='d'&&!editMode)||(c.id==='i'&&!c.items.length&&!editMode)||addCat===c.id)h+=`<div class="add" style="margin:8px 10px 0"><input type="text" id="nt_${c.id}" placeholder="مهمة جديدة في هذا القسم…"><input type="number" min="1" class="enum" id="ng_${c.id}" placeholder="العدد (اختياري)"><input type="text" id="nn_${c.id}" placeholder="ملاحظة (اختياري)"><label class="tl">من ${tpk('id="ntm_'+c.id+'"','',1)}</label><label class="tl">إلى ${tpk('id="nte_'+c.id+'"','',1)}</label>${ndHtml(c.id)}<button class="b p" data-a="new" data-cat="${c.id}">إضافة</button></div>`;else h+=`<div style="margin:8px 10px 0"><button class="b" data-a="addopen" data-cat="${c.id}">＋ إضافة مهمة في هذا القسم</button></div>`;
 h+='</details>'});
 if(!editMode){h+=agCard()+jrCard()+hbCard()+hlCard();if(!SM)h+=goalsCard()}
 if(editMode)h+='<div class="add" style="margin:12px 0 0"><input type="text" id="ncat" placeholder="اسم قسم جديد…"><button class="b p" data-a="newcat">＋ قسم جديد</button></div><div class="tools" style="margin-top:10px"><button class="b" data-a="rstall">استرجاع القائمة الأصلية</button><button class="b" data-a="blank">ابدأ بقائمة فارغة</button></div>';
@@ -1050,7 +1055,7 @@ h+=pmCard()+wordsCard()+memCard()+bkCard()+whCard()+rvCard()+fmCard()+mnCard();
 h+=arCard();
 h+='<div class="card"><b class="ct">'+ico('save',18)+'نسخة احتياطية</b><div class="tools" style="margin-top:8px"><button class="b" data-a="exp">تصدير</button><button class="b" data-a="imp">استيراد</button></div><div id="bkl">'+bkHtml()+'</div><div class="st" id="nm"></div><div class="jxp" id="pwa"></div></div>';
 h+='</aside>'}h+='</div>';
-h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 66)</span></div>';
+h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 67)</span></div>';
 morphApp($('#app'),h);
 const nb=$('#nb');if(nb)nb.oninput=()=>{S.notes[dd]=nb.value;touch()};
 document.querySelectorAll('input[id^=nt_]').forEach(nt=>{nt.onkeydown=e=>{if(e.key==='Enter')addTask(nt.id.slice(3))}});const nc=$('#ncat');if(nc)nc.onkeydown=e=>{if(e.key==='Enter')newCat()};
@@ -2044,7 +2049,7 @@ try{const o=JSON.parse(x.j);if(!o||typeof o.v!=='object')throw 0;await bkAuto(tr
 return false}
 setTimeout(()=>bkAuto(false),4000);
 /* ---- شريط التنقل السريع ---- */
-const QN=[['d','اليوم'],['p','الصلوات'],['q','القرآن'],['a','الأذكار'],['s','القراءة'],['i','الإيطالية'],['ag','الأجندة'],['jr','اليوميات'],['hb','العادات'],['hl','الصحة'],['gl','الأهداف'],['rp','التقرير'],['mm','الحفظ'],['arc','الأرشيف']];
+const QN=[['d','اليوم'],['p','الصلوات'],['q','القرآن'],['a','الأذكار'],['s','القراءة'],['i','اللغة'],['ag','الأجندة'],['jr','اليوميات'],['hb','العادات'],['hl','الصحة'],['gl','الأهداف'],['rp','التقرير'],['mm','الحفظ'],['arc','الأرشيف']];
 const qnSel=k=>k==='arc'?'#arc':'details[data-c="'+k+'"]';
 function qnBuild(){try{document.querySelectorAll('#qnav,#qfab,#qsheet').forEach(e=>e.remove());if(L.simple||editMode)return;const hero=document.querySelector('#app .hero');if(!hero)return;
 const items=QN.filter(x=>document.querySelector(qnSel(x[0])));if(items.length<4)return;
@@ -2219,7 +2224,7 @@ setInterval(()=>{if(!T||!T.run)return;if(tmLeft()<=0&&T.pomo){pomoNext();return}
 if(T.id){S.v[T.dd+'|'+T.id]=true;touch(T.dd);render()}tmBuild()}else tmTick()},500);
 const app=document.body;
 app.addEventListener('toggle',e=>{const d=e.target;if(L.focus)return;if(d.dataset&&d.dataset.c){OPENS[d.dataset.c]=d.open;if(L.keepOpen){L.closed[d.dataset.c]=!d.open;saveUI()}}},true);
-app.addEventListener('change',e=>{const t=e.target;
+app.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.lang){S.lang=t.value.trim().slice(0,30);touch();render();return}
 if(t.dataset&&t.dataset.mf&&t.tagName==='SELECT'){memSel(t);return}
 if(t.dataset&&t.dataset.pk){const w=t.closest('.tpk'),hid=w.querySelector('input[type=hidden]'),H=w.querySelector('[data-pk=h]').value,M=w.querySelector('[data-pk=m]').value,Pp=w.querySelector('[data-pk=p]').value;hid.value=H===''?'':pad(((+H)%12)+(Pp==='م'?12:0))+':'+pad(+M);hid.dispatchEvent(new Event('change',{bubbles:true}));return}
 if(t.dataset&&t.dataset.zf){if(t.tagName!=='TEXTAREA'&&t.type!=='text')zApply(t,false);return}
