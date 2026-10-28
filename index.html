@@ -627,7 +627,7 @@ const COMMON=[
 {id:'q',t:'۞ ورد القرآن',items:[['قراءة','5 أجزاء',5],['استماع','ربع'],['الحفظ','نصف ساعة (مقطع للقراءة في صلاة)']]},
 {id:'z',t:'۞ ورد الذكر',items:[['الاستغفار','1000 مرة',1000],['الحوقلة','1000 مرة',1000],['الصلاة على النبي ﷺ','1000 مرة',1000]]},
 {id:'a',t:'۞ الأذكار',items:[['أذكار الاستيقاظ'],['أذكار الصباح'],['أذكار المساء'],['أذكار النوم']]},
-{id:'s',t:'۞ القراءة والعلم',items:[['القراءة','نصف ساعة'],['التجويد','ربع ساعة'],['درس السيرة','نصف ساعة'],['الشعر','ربع ساعة (حفظ بيت ومراجعة المحفوظ)']]},
+{id:'s',t:'۞ القراءة والعلم',items:[]},
 {id:'i',t:'۞ تعلم اللغة',items:[]}
 ];
 const RKP=[2,3,2,2,2,2,4,2,2,4,2,3,2,2,4,2];
@@ -1019,7 +1019,7 @@ h+='<div class="grid'+(SM?' one':'')+'"><main class="card">';
 if(editMode)h+='<div class="st" style="margin:4px 0">وضع التعديل: عدّل اسم المهمة أو هدفها أو اسم القسم. «حذف نهائي» يزيلها فعليًا من قائمتك. أما «لهذا اليوم/أسبوع/شهر» فتخفيها مؤقتًا ثم تعود. وفي كل قسم زر لإضافة مهمة جديدة، وفي الأسفل «قسم جديد». «استرجاع الأصل» يرجّع الإعداد الأصلي.</div>';
 catsM(dd,editMode).forEach(c=>{
 if(c.hc&&!editMode)return;
-if(!c.items.length&&c.id!=='d'&&c.id!=='i'&&!c.u&&!editMode)return;
+if(!c.items.length&&c.id!=='d'&&c.id!=='i'&&c.id!=='s'&&!c.u&&!editMode)return;
 const done=c.items.filter(it=>isDone(dd,it)).length;
 const its=c.items.filter(it=>editMode||!(L.hide&&isDone(dd,it)));
 const ui=c.u?Math.max(0,(S.ucat||[]).findIndex(u=>u.id===c.id))%6:-1;
@@ -1041,7 +1041,7 @@ if(it.g)h+=`<span class="ctr"><b>${it.s?cnt+' ركعة':cnt+'/'+it.g}</b>${(it.s
 if(it.c)h+=`<button class="b x" data-a="del" data-id="${it.c}" data-sc="${it.sc||'w'}">${ico('x',14)}</button>`;
 h+='</div>';{const tk=it.b||it.id;if(tmOpen===tk&&!(it.u>0))h+=tmWrap(tk)}});
 if(c.id==='p'&&!editMode){const tot=c.items.reduce((a,it)=>a+(it.s?Math.max(it.r||0,val(dd,it)):(it.r||0)),0),rd=c.items.reduce((a,it)=>a+(it.s?val(dd,it):(isDone(dd,it)?(it.r||0):0)),0);h+=`<div class="rk"><div class="r1"><small>إجمالي الركعات</small><b>${tot}</b></div><div class="r2"><small>الركعات التي صليتها</small><b>${rd}</b></div></div>`}
-if((c.id==='d'&&!editMode)||(c.id==='i'&&!c.items.length&&!editMode)||addCat===c.id)h+=`<div class="add" style="margin:8px 10px 0"><input type="text" id="nt_${c.id}" placeholder="مهمة جديدة في هذا القسم…"><input type="number" min="1" class="enum" id="ng_${c.id}" placeholder="العدد (اختياري)"><input type="text" id="nn_${c.id}" placeholder="ملاحظة (اختياري)"><label class="tl">من ${tpk('id="ntm_'+c.id+'"','',1)}</label><label class="tl">إلى ${tpk('id="nte_'+c.id+'"','',1)}</label>${ndHtml(c.id)}<button class="b p" data-a="new" data-cat="${c.id}">إضافة</button></div>`;else h+=`<div style="margin:8px 10px 0"><button class="b" data-a="addopen" data-cat="${c.id}">＋ إضافة مهمة في هذا القسم</button></div>`;
+if((c.id==='d'&&!editMode)||((c.id==='i'||c.id==='s')&&!c.items.length&&!editMode)||addCat===c.id)h+=`<div class="add" style="margin:8px 10px 0"><input type="text" id="nt_${c.id}" placeholder="مهمة جديدة في هذا القسم…"><input type="number" min="1" class="enum" id="ng_${c.id}" placeholder="العدد (اختياري)"><input type="text" id="nn_${c.id}" placeholder="ملاحظة (اختياري)"><label class="tl">من ${tpk('id="ntm_'+c.id+'"','',1)}</label><label class="tl">إلى ${tpk('id="nte_'+c.id+'"','',1)}</label>${ndHtml(c.id)}<button class="b p" data-a="new" data-cat="${c.id}">إضافة</button></div>`;else h+=`<div style="margin:8px 10px 0"><button class="b" data-a="addopen" data-cat="${c.id}">＋ إضافة مهمة في هذا القسم</button></div>`;
 h+='</details>'});
 if(!editMode){h+=agCard()+jrCard()+hbCard()+hlCard();if(!SM)h+=goalsCard()}
 if(editMode)h+='<div class="add" style="margin:12px 0 0"><input type="text" id="ncat" placeholder="اسم قسم جديد…"><button class="b p" data-a="newcat">＋ قسم جديد</button></div><div class="tools" style="margin-top:10px"><button class="b" data-a="rstall">استرجاع القائمة الأصلية</button><button class="b" data-a="blank">ابدأ بقائمة فارغة</button></div>';
@@ -1055,7 +1055,7 @@ h+=pmCard()+wordsCard()+memCard()+bkCard()+whCard()+rvCard()+fmCard()+mnCard();
 h+=arCard();
 h+='<div class="card"><b class="ct">'+ico('save',18)+'نسخة احتياطية</b><div class="tools" style="margin-top:8px"><button class="b" data-a="exp">تصدير</button><button class="b" data-a="imp">استيراد</button></div><div id="bkl">'+bkHtml()+'</div><div class="st" id="nm"></div><div class="jxp" id="pwa"></div></div>';
 h+='</aside>'}h+='</div>';
-h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 67)</span></div>';
+h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 68)</span></div>';
 morphApp($('#app'),h);
 const nb=$('#nb');if(nb)nb.oninput=()=>{S.notes[dd]=nb.value;touch()};
 document.querySelectorAll('input[id^=nt_]').forEach(nt=>{nt.onkeydown=e=>{if(e.key==='Enter')addTask(nt.id.slice(3))}});const nc=$('#ncat');if(nc)nc.onkeydown=e=>{if(e.key==='Enter')newCat()};
