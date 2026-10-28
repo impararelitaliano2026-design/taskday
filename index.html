@@ -553,6 +553,9 @@ body.fc .cat>summary .chev,body.fc .cat>summary::after{display:none!important}
 .lgn{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 10px 4px}
 .lgn label{font-size:.85rem;font-weight:700;color:var(--mut)}
 .lgn input{flex:1;min-width:140px}
+/* ===== v69: الختمة داخل ورد القرآن ===== */
+.khin{margin:10px 10px 6px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--cc,var(--c-q)) 10%,var(--card));border:1px solid color-mix(in srgb,var(--cc,var(--c-q)) 30%,transparent)}
+.khin .sbh{margin:0 0 8px;display:inline-flex;align-items:center;gap:6px}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@400;700&family=Aref+Ruqaa+Ink:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#14213d">
@@ -1008,7 +1011,7 @@ if(a.adh)[['a1','الصباح','fajr'],['a2','المساء','asr']].forEach(x=>{
 if(!isNaN(sm)&&!fired[fk]&&cur>=sm&&cur<sm+1.5){fired[fk]=1;chimeSoft();showToast('حان وقت أذكار '+x[1])}})}
 
 function render(){
-applyTheme();const SM=!!L.simple;
+applyTheme();const SM=!!L.simple;let khIn=false;
 const dd=sel,[a,b]=stat(dd),p=pct(dd),wp=weekPct(),today=new Date().getDay(),sk=streak();
 let h=`<div class="hero"><div class="hl"><svg class="hlogo" width="52" height="52" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="#fca311"/><circle cx="33" cy="22" r="19" fill="currentColor"/><polygon points="38,9 40.2,14.6 46,16 40.2,17.4 38,23 35.8,17.4 30,16 35.8,14.6" fill="#fca311"/></svg><div class="hmain"><div class="hrow">${ORN}<div class="bsm">بسم الله الرحمن الرحيم</div>${ORN.replace('class="orn"','class="orn m"')}</div><h1>برنامجي الأسبوعي</h1><div class="hrow">${ORN}${hjLine()}${ORN.replace('class="orn"','class="orn m"')}</div></div></div><div class="fx3" id="fx3" aria-hidden="true"></div>${tmHero(dd)}${secOn('ins')?insHero():''}<div class="tools"><span id="st" class="st">${stTxt[st]}</span><button class="b" data-a="x_inl" aria-expanded="${!!JU.inl}" aria-label="أدوات">أدوات ${JU.inl?'▴':'▾'}</button><button class="b" data-a="focus" aria-pressed="${!!L.focus}">${L.focus?'خروج من التركيز':'تركيز'}</button><button class="b" data-a="theme" aria-label="تبديل المظهر">◐</button></div>${JU.inl?`<div class="tools"><button class="b" data-a="x_print" aria-label="طباعة ورقة اليوم">${ico('j_print',16)} طباعة</button><button class="b" data-a="x_arjump" aria-label="أرشيف الأسابيع">أرشيف الأسابيع</button><button class="b" data-a="x_insp" aria-expanded="${!!JU.secp}">الأقسام الظاهرة</button>${secOn('ins')?`<button class="b" data-a="x_inm" aria-label="إدارة الحكم والأبيات">إدارة الحِكم والأبيات</button>`:''}</div>${JU.secp?secPanel():''}${JU.inm&&secOn('ins')?insManage():''}`:''}</div>`;
 h+=(JU.tmx?tmPanel(dd):'')+bkBanner()+fastBanner()+'<div class="card" id="now">'+nowInner()+'</div>';
@@ -1042,12 +1045,13 @@ if(it.c)h+=`<button class="b x" data-a="del" data-id="${it.c}" data-sc="${it.sc|
 h+='</div>';{const tk=it.b||it.id;if(tmOpen===tk&&!(it.u>0))h+=tmWrap(tk)}});
 if(c.id==='p'&&!editMode){const tot=c.items.reduce((a,it)=>a+(it.s?Math.max(it.r||0,val(dd,it)):(it.r||0)),0),rd=c.items.reduce((a,it)=>a+(it.s?val(dd,it):(isDone(dd,it)?(it.r||0):0)),0);h+=`<div class="rk"><div class="r1"><small>إجمالي الركعات</small><b>${tot}</b></div><div class="r2"><small>الركعات التي صليتها</small><b>${rd}</b></div></div>`}
 if((c.id==='d'&&!editMode)||((c.id==='i'||c.id==='s')&&!c.items.length&&!editMode)||addCat===c.id)h+=`<div class="add" style="margin:8px 10px 0"><input type="text" id="nt_${c.id}" placeholder="مهمة جديدة في هذا القسم…"><input type="number" min="1" class="enum" id="ng_${c.id}" placeholder="العدد (اختياري)"><input type="text" id="nn_${c.id}" placeholder="ملاحظة (اختياري)"><label class="tl">من ${tpk('id="ntm_'+c.id+'"','',1)}</label><label class="tl">إلى ${tpk('id="nte_'+c.id+'"','',1)}</label>${ndHtml(c.id)}<button class="b p" data-a="new" data-cat="${c.id}">إضافة</button></div>`;else h+=`<div style="margin:8px 10px 0"><button class="b" data-a="addopen" data-cat="${c.id}">＋ إضافة مهمة في هذا القسم</button></div>`;
+if(c.id==='q'&&!editMode&&secOn('kh')){khIn=true;h+=`<div class="khin" role="group" aria-label="متابعة ختمة القرآن"><div class="sbh">${ico('quran',16)} متابعة ختمة القرآن</div>${khCard()}</div>`}
 h+='</details>'});
 if(!editMode){h+=agCard()+jrCard()+hbCard()+hlCard();if(!SM)h+=goalsCard()}
 if(editMode)h+='<div class="add" style="margin:12px 0 0"><input type="text" id="ncat" placeholder="اسم قسم جديد…"><button class="b p" data-a="newcat">＋ قسم جديد</button></div><div class="tools" style="margin-top:10px"><button class="b" data-a="rstall">استرجاع القائمة الأصلية</button><button class="b" data-a="blank">ابدأ بقائمة فارغة</button></div>';
 h+='</main>';if(!SM){h+='<aside>';
 h+=det('rp','۞ تقرير الأسبوع','حتى الآن',reportCard(),true);
-h+=det('kh','۞ ختمة القرآن',((S.kh&&S.kh.pos)||0)+'/30',khCard(),true);
+if(!khIn)h+=det('kh','۞ ختمة القرآن',((S.kh&&S.kh.pos)||0)+'/30',khCard(),true);
 if(secOn('rp'))h+='<div class="card"><b class="ct">'+ico('chart',18)+'إنجاز الأسبوع حسب المجال</b>'+radBox()+catStats().map(o=>{const q=Math.round(o.a/o.b*100);return `<div class="row"><span><i class="dt" style="background:var(--c-${o.id},var(--c-c))"></i>${esc(o.t)}</span><span>${q}%</span></div><div class="bar"><i style="width:${q}%;background:var(--c-${o.id},var(--c-c))"></i></div>`}).join('')+'</div>';
 if(secOn('rp'))h+=heatCard();
 if(secOn('nb'))h+=`<div class="card"><b class="ct">${ico('note',18)}ملاحظات اليوم</b><textarea id="nb" placeholder="اكتب ملاحظاتك هنا…">${esc(S.notes[dd]||'')}</textarea></div>`;
@@ -1055,7 +1059,7 @@ h+=pmCard()+wordsCard()+memCard()+bkCard()+whCard()+rvCard()+fmCard()+mnCard();
 h+=arCard();
 h+='<div class="card"><b class="ct">'+ico('save',18)+'نسخة احتياطية</b><div class="tools" style="margin-top:8px"><button class="b" data-a="exp">تصدير</button><button class="b" data-a="imp">استيراد</button></div><div id="bkl">'+bkHtml()+'</div><div class="st" id="nm"></div><div class="jxp" id="pwa"></div></div>';
 h+='</aside>'}h+='</div>';
-h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 68)</span></div>';
+h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 69)</span></div>';
 morphApp($('#app'),h);
 const nb=$('#nb');if(nb)nb.oninput=()=>{S.notes[dd]=nb.value;touch()};
 document.querySelectorAll('input[id^=nt_]').forEach(nt=>{nt.onkeydown=e=>{if(e.key==='Enter')addTask(nt.id.slice(3))}});const nc=$('#ncat');if(nc)nc.onkeydown=e=>{if(e.key==='Enter')newCat()};
