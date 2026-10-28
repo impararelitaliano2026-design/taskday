@@ -629,7 +629,7 @@ const COMMON=[
 {id:'p',t:'۞ الصلوات والسنن',items:[['صلاة الليل','ركعتان فما فوق',2,0,2,40],['صلاة الوتر','3'],['سنة الفجر القبلية','2'],['صلاة الفجر','2'],['صلاة الضحى','ركعتان',0,2],['سنة الظهر القبلية','ركعتان',0,2],['صلاة الظهر','4'],['سنة الظهر البعدية','ركعتان',0,2],['سنة العصر القبلية','ركعتان',0,2],['صلاة العصر','4'],['سنة المغرب القبلية','2'],['صلاة المغرب','3'],['سنة المغرب البعدية','2'],['سنة العشاء القبلية','2'],['صلاة العشاء','4'],['سنة العشاء البعدية','2']]},
 {id:'q',t:'۞ ورد القرآن',items:[['قراءة','5 أجزاء',5],['استماع','ربع'],['الحفظ','نصف ساعة (مقطع للقراءة في صلاة)']]},
 {id:'z',t:'۞ ورد الذكر',items:[['الاستغفار','1000 مرة',1000],['الحوقلة','1000 مرة',1000],['الصلاة على النبي ﷺ','1000 مرة',1000]]},
-{id:'a',t:'۞ الأذكار',items:[['أذكار الاستيقاظ'],['أذكار الصباح'],['أذكار المساء'],['أذكار النوم']]},
+{id:'a',t:'۞ أوراد الذكر',items:[['أذكار الاستيقاظ'],['أذكار الصباح'],['أذكار المساء'],['أذكار النوم']]},
 {id:'s',t:'۞ القراءة والعلم',items:[]},
 {id:'i',t:'۞ تعلم اللغة',items:[]}
 ];
@@ -675,9 +675,10 @@ const key=(dd,it)=>dd+'|'+it.id;
 const val=(dd,it)=>{const x=S.v[key(dd,it)];return x===true?(it.g||1):(x||0)};
 const isDone=(dd,it)=>it.g?val(dd,it)>=it.g:!!S.v[key(dd,it)];
 function catsM(dd,inc){const o=cats(dd,inc),ia=o.findIndex(c=>c.id==='a'),iz=o.findIndex(c=>c.id==='z');
-if(ia<0||iz<0)return o;const a=o[ia],z=o[iz];if(a.hc||z.hc)return o;
-const m=Object.assign({},a,{items:a.items.concat(z.items),zs:true,t:((S.ctt||{}).a)?a.t:'الأذكار وورد الذكر'});
-o[ia]=m;o.splice(iz,1);return o}
+if(ia<0||iz<0)return qAfterA(o);const a=o[ia],z=o[iz];if(a.hc||z.hc)return qAfterA(o);
+const m=Object.assign({},a,{items:a.items.concat(z.items),zs:true,t:((S.ctt||{}).a)?a.t:'أوراد الذكر'});
+o[ia]=m;o.splice(iz,1);return qAfterA(o)}
+function qAfterA(o){const iq=o.findIndex(c=>c.id==='q');if(iq<0)return o;const q=o.splice(iq,1)[0];const ia=o.findIndex(c=>c.id==='a');o.splice(ia<0?iq:ia+1,0,q);return o}
 function stat(dd){let a=0,b=0;cats(dd).forEach(c=>c.items.forEach(it=>{b++;if(isDone(dd,it))a++}));return[a,b]}
 const pct=dd=>{const[a,b]=stat(dd);return b?Math.round(a/b*100):0};
 function weekPct(){let a=0,b=0;DAYS.forEach(x=>{const s=stat(x.d);a+=s[0];b+=s[1]});return b?Math.round(a/b*100):0}
@@ -788,7 +789,7 @@ return h}
 const tdk=()=>fmt(new Date());
 const addDays=(ds,n)=>{const p=ds.split('-').map(Number);return fmt(new Date(p[0],p[1]-1,p[2]+n))};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
-const CATN={p:'الصلوات والسنن',q:'ورد القرآن',z:'ورد الذكر',a:'الأذكار وورد الذكر',s:'القراءة والعلم',i:'تعلم اللغة',d:'مهام اليوم',c:'المهام الإضافية'};
+const CATN={p:'الصلوات والسنن',q:'ورد القرآن',z:'ورد الذكر',a:'أوراد الذكر',s:'القراءة والعلم',i:'تعلم اللغة',d:'مهام اليوم',c:'المهام الإضافية'};
 let editMode=false,rev=null,addCat='',tmOpen='';
 /* مواعيد مهام اليوم: a = وقت ثابت، r = بعد صلاة (بالدقائق m أو حتى صلاة أخرى re) */
 const SCH={
@@ -1059,7 +1060,7 @@ h+=pmCard()+wordsCard()+memCard()+bkCard()+whCard()+rvCard()+fmCard()+mnCard();
 h+=arCard();
 h+='<div class="card"><b class="ct">'+ico('save',18)+'نسخة احتياطية</b><div class="tools" style="margin-top:8px"><button class="b" data-a="exp">تصدير</button><button class="b" data-a="imp">استيراد</button></div><div id="bkl">'+bkHtml()+'</div><div class="st" id="nm"></div><div class="jxp" id="pwa"></div></div>';
 h+='</aside>'}h+='</div>';
-h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 69)</span></div>';
+h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 70)</span></div>';
 morphApp($('#app'),h);
 const nb=$('#nb');if(nb)nb.oninput=()=>{S.notes[dd]=nb.value;touch()};
 document.querySelectorAll('input[id^=nt_]').forEach(nt=>{nt.onkeydown=e=>{if(e.key==='Enter')addTask(nt.id.slice(3))}});const nc=$('#ncat');if(nc)nc.onkeydown=e=>{if(e.key==='Enter')newCat()};
@@ -2053,7 +2054,7 @@ try{const o=JSON.parse(x.j);if(!o||typeof o.v!=='object')throw 0;await bkAuto(tr
 return false}
 setTimeout(()=>bkAuto(false),4000);
 /* ---- شريط التنقل السريع ---- */
-const QN=[['d','اليوم'],['p','الصلوات'],['q','القرآن'],['a','الأذكار'],['s','القراءة'],['i','اللغة'],['ag','الأجندة'],['jr','اليوميات'],['hb','العادات'],['hl','الصحة'],['gl','الأهداف'],['rp','التقرير'],['mm','الحفظ'],['arc','الأرشيف']];
+const QN=[['d','اليوم'],['p','الصلوات'],['a','أوراد الذكر'],['q','القرآن'],['s','القراءة'],['i','اللغة'],['ag','الأجندة'],['jr','اليوميات'],['hb','العادات'],['hl','الصحة'],['gl','الأهداف'],['rp','التقرير'],['mm','الحفظ'],['arc','الأرشيف']];
 const qnSel=k=>k==='arc'?'#arc':'details[data-c="'+k+'"]';
 function qnBuild(){try{document.querySelectorAll('#qnav,#qfab,#qsheet').forEach(e=>e.remove());if(L.simple||editMode)return;const hero=document.querySelector('#app .hero');if(!hero)return;
 const items=QN.filter(x=>document.querySelector(qnSel(x[0])));if(items.length<4)return;
