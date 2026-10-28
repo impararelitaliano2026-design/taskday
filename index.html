@@ -653,14 +653,13 @@ o.push({id:'d',t:'۞ مهام اليوم',items:(SPEC[dd]||[]).map((x,k)=>applyO
 COMMON.forEach(c=>o.push({id:c.id,t:c.t,items:c.items.flatMap((x,k)=>{const u=x[3]||1;return Array.from({length:u},(_,j)=>applyOv({id:c.id+k+(j?'bcd'[j-1]:''),b:c.id+k,u:j,t:x[0],n:u>1?['الأولى','الثانية','الثالثة'][j]+': '+(x[1]||''):(x[1]||''),g:x[2]||0,s:x[4]||0,mx:x[5]||0,r:c.id==='p'?RKP[k]:0}))})}));
 if(dd===5){const pc=o.find(c=>c.id==='p');pc.items=pc.items.filter(it=>it.id!=='p5'&&it.id!=='p5b');pc.items.forEach(it=>{if(it.id==='p6'){it.t='صلاة الجمعة';it.n='ركعتان';it.r=2}if(it.id==='p7'||it.id==='p7b')it.t='سنة الجمعة البعدية'})}
 const ex={};
-const pushEx=(x,sc,n0)=>{const cid=x.cat||'c';(ex[cid]=ex[cid]||[]).push({id:'c'+x.id,t:x.t,n:[x.n,n0].filter(Boolean).join(' · '),g:x.g||0,c:x.id,sc:sc,cat:cid})};
+const pushEx=(x,sc,n0)=>{const cid=(!x.cat||x.cat==='c')?'d':x.cat;(ex[cid]=ex[cid]||[]).push({id:'c'+x.id,t:x.t,n:[x.n,n0].filter(Boolean).join(' · '),g:x.g||0,c:x.id,sc:sc,cat:cid})};
 (S.daily||[]).forEach(x=>pushEx(x,'d','كل يوم'));
 (S.custom[dd]||[]).forEach(x=>pushEx(x,'w',''));
 (S.rep||[]).forEach(x=>{if((x.days||[]).indexOf(dd)>=0)pushEx(x,'r',repLbl(x.days))});
 ((S.once||{})[dkey(dd)]||[]).forEach(x=>pushEx(x,'o','مرة واحدة'));
 (S.ucat||[]).forEach(u=>o.push({id:u.id,t:u.t,items:[],u:1,ic:u.ic||guessIco(u.t)}));
-o.push({id:'c',t:'۞ مهامي الإضافية',items:[]});
-Object.keys(ex).forEach(cid=>{const c=o.find(z=>z.id===cid&&!(S.del||{})[cid])||o.find(z=>z.id==='c');if(!c)return;ex[cid].forEach(x=>c.items.push(x))});
+Object.keys(ex).forEach(cid=>{const c=o.find(z=>z.id===cid&&!(S.del||{})[cid])||o.find(z=>z.id==='d');if(!c)return;ex[cid].forEach(x=>c.items.push(x))});
 {const dl=S.del||{},ct=S.ctt||{};o=o.filter(c=>!dl[c.id]);o.forEach(c=>{c.items=c.items.filter(it=>it.c||!dl[it.b]);if(ct[c.id])c.t=ct[c.id]});o.forEach(c=>{c.t=c.t.replace(/^۞\s*/,'');c.ic=CAT_ICO[c.id]||'gem'})}
 {const ds=dkey(dd);o.forEach(c=>{const co=(S.cov||{})[c.id];if(hid(co,ds)){c.hc=1;c.hn=hidN(co,ds)}})}
 if(!inc)o.forEach(c=>{c.items=c.hc?[]:c.items.filter(it=>!it.h)});
@@ -1051,7 +1050,7 @@ h+=pmCard()+wordsCard()+memCard()+bkCard()+whCard()+rvCard()+fmCard()+mnCard();
 h+=arCard();
 h+='<div class="card"><b class="ct">'+ico('save',18)+'نسخة احتياطية</b><div class="tools" style="margin-top:8px"><button class="b" data-a="exp">تصدير</button><button class="b" data-a="imp">استيراد</button></div><div id="bkl">'+bkHtml()+'</div><div class="st" id="nm"></div><div class="jxp" id="pwa"></div></div>';
 h+='</aside>'}h+='</div>';
-h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 65)</span></div>';
+h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 66)</span></div>';
 morphApp($('#app'),h);
 const nb=$('#nb');if(nb)nb.oninput=()=>{S.notes[dd]=nb.value;touch()};
 document.querySelectorAll('input[id^=nt_]').forEach(nt=>{nt.onkeydown=e=>{if(e.key==='Enter')addTask(nt.id.slice(3))}});const nc=$('#ncat');if(nc)nc.onkeydown=e=>{if(e.key==='Enter')newCat()};
@@ -2188,7 +2187,7 @@ if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){window.add
 window.addEventListener('offline',()=>showToast('لا يوجد اتصال: بياناتك تُحفظ على جهازك وتُزامَن عند عودته'));
 window.addEventListener('online',()=>{try{push()}catch(e){}pwaUpd()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)JU.hid=Date.now();else if(L.pin&&L.pin.h&&JU.ok&&JU.hid&&Date.now()-JU.hid>60000){JU.ok=false;render()}});
-function addTask(cat){cat=cat||'c';const el=$('#nt_'+cat);if(!el)return;const t=el.value.trim();if(!t)return;const id=uid(),g=Math.floor(+(($('#ng_'+cat)||{}).value))||0,n=(($('#nn_'+cat)||{}).value||'').trim();
+function addTask(cat){cat=cat||'d';const el=$('#nt_'+cat);if(!el)return;const t=el.value.trim();if(!t)return;const id=uid(),g=Math.floor(+(($('#ng_'+cat)||{}).value))||0,n=(($('#nn_'+cat)||{}).value||'').trim();
 const x={id,t,cat};if(g>=1)x.g=g;if(n)x.n=n;const ta=($('#ntm_'+cat)||{}).value,te=($('#nte_'+cat)||{}).value;if(ta){x.tm={a:ta};if(te)x.tm.e=te}
 const once=!!(JU.no&&JU.no[cat]),ds=ndDays(cat).slice().sort();
 if(once){const k=dkey(sel);((S.once=S.once||{})[k]=S.once[k]||[]).push(x)}
