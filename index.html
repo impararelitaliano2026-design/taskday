@@ -557,15 +557,12 @@ body.fc .cat>summary .chev,body.fc .cat>summary::after{display:none!important}
 .khin{margin:10px 10px 6px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--cc,var(--c-q)) 10%,var(--card));border:1px solid color-mix(in srgb,var(--cc,var(--c-q)) 30%,transparent)}
 .khin .sbh{margin:0 0 8px;display:inline-flex;align-items:center;gap:6px}
 </style>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@400;700&family=Aref+Ruqaa+Ink:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@400;700&family=Aref+Ruqaa+Ink:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <meta name="theme-color" content="#14213d">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -706,11 +703,15 @@ if(norm())S.ts=Date.now();
 saveLocal();
 const stTxt={local:'محفوظ على هذا الجهاز فقط',ok:'✓ متزامن (اضغط هنا للخروج)',sync:'جاري المزامنة…',err:'تعذرت المزامنة (البيانات محفوظة هنا)'};
 function setSt(x){st=x;const e=$('#st');if(e)e.textContent=stTxt[x]}
-function push(){if(!ref)return;clearTimeout(pt);pt=setTimeout(()=>{setSt('sync');const sn=clone(S);try{const kb=Math.round(JSON.stringify(sn).length/1024);if(kb>700&&!window.__szw){window.__szw=1;showToast('حجم بياناتك '+kb+' ك.ب وقارب حد المزامنة (1 ميجا). صدّر نسخة احتياطية وقلّل الأرشيف')}}catch(e){}try{ref.set(fsEnc(sn)).then(()=>{setSt('ok');BASE=sn;saveBase()}).catch(e=>{console.warn('sync',e);setSt('err')})}catch(e){console.warn('sync',e);setSt('err')}},700)}
+function push(){if(!ref)return;clearTimeout(pt);pt=setTimeout(pushNow,400)}
+function pushNow(){if(!ref)return;clearTimeout(pt);pt=null;try{arcSnap();saveLocal()}catch(e){}{setSt('sync');const sn=clone(S);try{const kb=Math.round(JSON.stringify(sn).length/1024);if(kb>700&&!window.__szw){window.__szw=1;showToast('حجم بياناتك '+kb+' ك.ب وقارب حد المزامنة (1 ميجا). صدّر نسخة احتياطية وقلّل الأرشيف')}}catch(e){}try{ref.set(fsEnc(sn)).then(()=>{setSt('ok');BASE=sn;saveBase()}).catch(e=>{console.warn('sync',e);setSt('err')})}catch(e){console.warn('sync',e);setSt('err')}}}
+/* عند مغادرة التطبيق نرفع التعديلات فورًا بدل انتظار المؤقت */
+function flushPush(){if(pt&&ref)pushNow()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)flushPush()});window.addEventListener('pagehide',flushPush);
 /* Firestore لا يقبل قائمة داخل قائمة: نغلّف القوائم الداخلية عند الرفع ونفكّها عند الاستلام */
 function fsEnc(v){if(Array.isArray(v))return v.map(x=>Array.isArray(x)?{__a:fsEnc(x)}:fsEnc(x));if(v&&typeof v==='object'){const o={};for(const k in v)if(v[k]!==undefined)o[k]=fsEnc(v[k]);return o}return v}
 function fsDec(v){if(Array.isArray(v))return v.map(fsDec);if(v&&typeof v==='object'){const k=Object.keys(v);if(k.length===1&&k[0]==='__a'&&Array.isArray(v.__a))return v.__a.map(fsDec);const o={};k.forEach(x=>o[x]=fsDec(v[x]));return o}return v}
-let arT=null;function touch(dd){dd=dd===undefined?sel:dd;S.ts=Date.now();clearTimeout(arT);arT=setTimeout(()=>{try{arcSnap();saveLocal();push()}catch(e){}},4000);S.log[dkey(dd)]=pct(dd);const ks=Object.keys(S.log).sort();while(ks.length>120)delete S.log[ks.shift()];try{xStat()}catch(e){}saveLocal();push()}
+let arT=null;function touch(dd){dd=dd===undefined?sel:dd;S.ts=Date.now();clearTimeout(arT);if(!ref)arT=setTimeout(()=>{try{arcSnap();saveLocal()}catch(e){}},4000);S.log[dkey(dd)]=pct(dd);const ks=Object.keys(S.log).sort();while(ks.length>120)delete S.log[ks.shift()];try{xStat()}catch(e){}saveLocal();push()}
 function applyTheme(){if(L.theme)document.documentElement.setAttribute('data-theme',L.theme);else document.documentElement.removeAttribute('data-theme')}
 function dur(n){if(!n)return 0;if(/نصف ساعة/.test(n))return 30;if(/ربع ساعة/.test(n))return 15;const m=/(\d+) دقيقة/.exec(n);if(m)return +m[1];if(/ساعة/.test(n))return 60;return 0}
 
@@ -1060,7 +1061,7 @@ h+=pmCard()+wordsCard()+memCard()+bkCard()+whCard()+rvCard()+fmCard()+mnCard();
 h+=arCard();
 h+='<div class="card"><b class="ct">'+ico('save',18)+'نسخة احتياطية</b><div class="tools" style="margin-top:8px"><button class="b" data-a="exp">تصدير</button><button class="b" data-a="imp">استيراد</button></div><div id="bkl">'+bkHtml()+'</div><div class="st" id="nm"></div><div class="jxp" id="pwa"></div></div>';
 h+='</aside>'}h+='</div>';
-h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 70)</span></div>';
+h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 71)</span></div>';
 morphApp($('#app'),h);
 const nb=$('#nb');if(nb)nb.oninput=()=>{S.notes[dd]=nb.value;touch()};
 document.querySelectorAll('input[id^=nt_]').forEach(nt=>{nt.onkeydown=e=>{if(e.key==='Enter')addTask(nt.id.slice(3))}});const nc=$('#ncat');if(nc)nc.onkeydown=e=>{if(e.key==='Enter')newCat()};
@@ -2193,7 +2194,7 @@ else if(ios)h+='<div class="st" style="margin-top:6px">في «سفاري»: اض
 else h+='<div class="st" style="margin-top:6px">من قائمة المتصفح اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».</div>';
 h+=`<div class="st" style="margin-top:6px">${sw?'العمل بلا إنترنت مفعّل: بياناتك تُحفظ على جهازك وتُزامَن عند عودة الاتصال.':'العمل بلا إنترنت: يتفعّل بعد رفع الملفين sw.js وmanifest.webmanifest مع الصفحة وفتحها مرة واحدة بالإنترنت.'}</div>`;
 if(el.innerHTML!==h)el.innerHTML=h}
-if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(()=>setTimeout(pwaUpd,1500)).catch(()=>{})});navigator.serviceWorker.addEventListener('controllerchange',()=>pwaUpd())}
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(()=>setTimeout(pwaUpd,1500)).catch(()=>{})});const hadSW=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener('controllerchange',()=>{pwaUpd();if(hadSW)showToast('نزل تحديث جديد للبرنامج، وسيظهر عند فتحه في المرة القادمة')})}
 window.addEventListener('offline',()=>showToast('لا يوجد اتصال: بياناتك تُحفظ على جهازك وتُزامَن عند عودته'));
 window.addEventListener('online',()=>{try{push()}catch(e){}pwaUpd()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)JU.hid=Date.now();else if(L.pin&&L.pin.h&&JU.ok&&JU.hid&&Date.now()-JU.hid>60000){JU.ok=false;render()}});
@@ -2316,7 +2317,12 @@ ov.innerHTML='<form id="lg" style="background:#fff;color:#14213d;border-radius:2
 document.body.appendChild(ov);
 const msg=t=>{ov.querySelector('#lgm').textContent=t};
 const ar={'auth/invalid-credential':'البريد أو كلمة المرور غير صحيحة','auth/wrong-password':'كلمة المرور غير صحيحة','auth/user-not-found':'لا يوجد حساب بهذا البريد','auth/email-already-in-use':'هذا البريد مسجل بالفعل، اضغط دخول','auth/weak-password':'كلمة المرور ضعيفة','auth/invalid-email':'البريد غير صالح','auth/network-request-failed':'لا يوجد اتصال بالإنترنت','auth/too-many-requests':'محاولات كثيرة، انتظر قليلًا'};
-if(!window.firebase||!FB.apiKey||FB.apiKey.indexOf('PASTE')===0){setSt('local');return}
+if(!FB.apiKey||FB.apiKey.indexOf('PASTE')===0){setSt('local');return}
+setSt('sync');
+/* نحمّل Firebase بعد ظهور الصفحة حتى لا يؤخّر فتح التطبيق */
+const FBU='https://www.gstatic.com/firebasejs/10.12.2/firebase-',ldJs=u=>new Promise((ok,no)=>{const x=document.createElement('script');x.src=u;x.async=true;x.onload=ok;x.onerror=no;document.head.appendChild(x)});
+(window.firebase?Promise.resolve():ldJs(FBU+'app-compat.js').then(()=>Promise.all([ldJs(FBU+'auth-compat.js'),ldJs(FBU+'firestore-compat.js')]))).then(fbGo).catch(()=>setSt(navigator.onLine===false?'local':'err'));
+function fbGo(){if(!window.firebase){setSt('local');return}
 firebase.initializeApp(FB);
 const auth=firebase.auth(),fs=firebase.firestore();
 fs.enablePersistence({synchronizeTabs:true}).catch(()=>{});
@@ -2337,6 +2343,12 @@ const r=snap.exists?fsDec(clone(snap.data())):null;
 if(!r){push();return}
 if(snap.metadata.hasPendingWrites)return;
 syncIn(r)},()=>setSt('err'))});
+/* عند الرجوع للتطبيق بعد غيابه: نعيد الاتصال فورًا ونجلب آخر نسخة من الخادم */
+let hidAt=0;document.addEventListener('visibilitychange',()=>{if(document.hidden){hidAt=Date.now();return}
+if(!ref||Date.now()-hidAt<4000)return;const r0=ref;
+Promise.resolve(fs.disableNetwork&&fs.disableNetwork()).then(()=>fs.enableNetwork&&fs.enableNetwork()).catch(()=>{})
+.then(()=>r0.get&&r0.get({source:'server'})).then(sn=>{if(!sn||r0!==ref||!sn.exists||sn.metadata.hasPendingWrites)return;syncIn(fsDec(clone(sn.data())))}).catch(()=>{})});
+}
 })();
 </script>
 </body>
