@@ -556,6 +556,27 @@ body.fc .cat>summary .chev,body.fc .cat>summary::after{display:none!important}
 /* ===== v69: الختمة داخل ورد القرآن ===== */
 .khin{margin:10px 10px 6px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--cc,var(--c-q)) 10%,var(--card));border:1px solid color-mix(in srgb,var(--cc,var(--c-q)) 30%,transparent)}
 .khin .sbh{margin:0 0 8px;display:inline-flex;align-items:center;gap:6px}
+/* ===== v72: ورقة مهام الأسبوع ===== */
+.pa4.wk{width:297mm;height:209mm;padding:6mm 7mm 5mm;font-size:calc(8.6pt*var(--pz,1))}
+.wkhd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1.6pt solid #14213D;padding-bottom:1.6mm}
+.wktt{font-size:1.9em;font-weight:800;color:#14213D;line-height:1.15}
+.wks{color:#4b5563;font-size:1.02em}
+.wkg{flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,1fr);gap:1.6mm}
+.wkd{border:.7pt solid #cfd5e2;border-radius:2mm;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.wkd.td{border-color:#FCA311;border-width:1.2pt}
+.wkh{background:#14213D;color:#fff;padding:1.3mm 1.8mm;display:flex;flex-direction:column;line-height:1.25}
+.wkd.td .wkh{background:#FCA311;color:#14213D}
+.wkh b{font-size:1.18em}.wkh span{font-size:.86em;opacity:.85}
+.wkb{padding:1.2mm 1.5mm;display:flex;flex-direction:column;gap:1.1mm}
+.wkc{font-size:.8em;font-weight:700;color:#8a5a00;border-bottom:.4pt dashed #e7c27a;margin-top:.6mm}
+.wki{display:flex;gap:1.3mm;align-items:flex-start;line-height:1.3}
+.wki .bx{flex:none;width:2.9mm;height:2.9mm;border:.8pt solid #14213D;border-radius:.6mm;margin-top:.5mm}
+.wki .bx.on{background:#14213D}
+.wkt{font-weight:600;color:#111827}
+.wkn,.wkm{display:block;font-size:.82em;color:#6b7280}
+.wke{color:#9ca3af;font-size:.9em;text-align:center;margin-top:3mm}
+.wkf{font-size:.82em;color:#6b7280;text-align:center}
+@media print{body.prOn .prw:has(.pa4.wk){width:297mm!important;height:209mm!important}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@400;700&family=Aref+Ruqaa+Ink:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <meta name="theme-color" content="#14213d">
@@ -1015,10 +1036,10 @@ if(!isNaN(sm)&&!fired[fk]&&cur>=sm&&cur<sm+1.5){fired[fk]=1;chimeSoft();showToas
 function render(){
 applyTheme();const SM=!!L.simple;let khIn=false;
 const dd=sel,[a,b]=stat(dd),p=pct(dd),wp=weekPct(),today=new Date().getDay(),sk=streak();
-let h=`<div class="hero"><div class="hl"><svg class="hlogo" width="52" height="52" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="#fca311"/><circle cx="33" cy="22" r="19" fill="currentColor"/><polygon points="38,9 40.2,14.6 46,16 40.2,17.4 38,23 35.8,17.4 30,16 35.8,14.6" fill="#fca311"/></svg><div class="hmain"><div class="hrow">${ORN}<div class="bsm">بسم الله الرحمن الرحيم</div>${ORN.replace('class="orn"','class="orn m"')}</div><h1>برنامجي الأسبوعي</h1><div class="hrow">${ORN}${hjLine()}${ORN.replace('class="orn"','class="orn m"')}</div></div></div><div class="fx3" id="fx3" aria-hidden="true"></div>${tmHero(dd)}${secOn('ins')?insHero():''}<div class="tools"><span id="st" class="st">${stTxt[st]}</span><button class="b" data-a="x_inl" aria-expanded="${!!JU.inl}" aria-label="أدوات">أدوات ${JU.inl?'▴':'▾'}</button><button class="b" data-a="focus" aria-pressed="${!!L.focus}">${L.focus?'خروج من التركيز':'تركيز'}</button><button class="b" data-a="theme" aria-label="تبديل المظهر">◐</button></div>${JU.inl?`<div class="tools"><button class="b" data-a="x_print" aria-label="طباعة ورقة اليوم">${ico('j_print',16)} طباعة</button><button class="b" data-a="x_arjump" aria-label="أرشيف الأسابيع">أرشيف الأسابيع</button><button class="b" data-a="x_insp" aria-expanded="${!!JU.secp}">الأقسام الظاهرة</button>${secOn('ins')?`<button class="b" data-a="x_inm" aria-label="إدارة الحكم والأبيات">إدارة الحِكم والأبيات</button>`:''}</div>${JU.secp?secPanel():''}${JU.inm&&secOn('ins')?insManage():''}`:''}</div>`;
-h+=(JU.tmx?tmPanel(dd):'')+bkBanner()+fastBanner()+'<div class="card" id="now">'+nowInner()+'</div>';
+let h=`<div class="hero"><div class="hl"><svg class="hlogo" width="52" height="52" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" fill="#fca311"/><circle cx="33" cy="22" r="19" fill="currentColor"/><polygon points="38,9 40.2,14.6 46,16 40.2,17.4 38,23 35.8,17.4 30,16 35.8,14.6" fill="#fca311"/></svg><div class="hmain"><div class="hrow">${ORN}<div class="bsm">بسم الله الرحمن الرحيم</div>${ORN.replace('class="orn"','class="orn m"')}</div><h1>برنامجي الأسبوعي</h1><div class="hrow">${ORN}${hjLine()}${ORN.replace('class="orn"','class="orn m"')}</div></div></div><div class="fx3" id="fx3" aria-hidden="true"></div>${secOn('ins')?insHero():''}<div class="tools"><span id="st" class="st">${stTxt[st]}</span><button class="b" data-a="x_inl" aria-expanded="${!!JU.inl}" aria-label="أدوات">أدوات ${JU.inl?'▴':'▾'}</button><button class="b" data-a="focus" aria-pressed="${!!L.focus}">${L.focus?'خروج من التركيز':'تركيز'}</button><button class="b" data-a="theme" aria-label="تبديل المظهر">◐</button></div>${JU.inl?`<div class="tools"><button class="b" data-a="x_print" aria-label="طباعة ورقة اليوم">${ico('j_print',16)} طباعة</button><button class="b" data-a="x_prw" aria-label="طباعة مهام الأسبوع">${ico('j_print',16)} مهام الأسبوع</button><button class="b" data-a="x_arjump" aria-label="أرشيف الأسابيع">أرشيف الأسابيع</button><button class="b" data-a="x_insp" aria-expanded="${!!JU.secp}">الأقسام الظاهرة</button>${secOn('ins')?`<button class="b" data-a="x_inm" aria-label="إدارة الحكم والأبيات">إدارة الحِكم والأبيات</button>`:''}</div>${JU.secp?secPanel():''}${JU.inm&&secOn('ins')?insManage():''}`:''}</div>`;
+h+=bkBanner()+fastBanner()+'<div class="card" id="now">'+nowInner()+'</div>';
 h+='<div class="tabs">'+DAYS.map(x=>`<button class="tab ${x.d===dd?'on':''} ${x.d===today?'today':''}" data-a="tab" data-d="${x.d}">${x.n}<small>${pct(x.d)}%</small></button>`).join('')+'</div>';
-h+=`<div class="card"><div class="row"><b>تقدم ${DAYS.find(x=>x.d===dd).n}</b><span>${a} / ${b} (${p}%)</span></div><div class="bar"><i style="width:${p}%"></i></div><div class="row"><span>تقدم الأسبوع</span><span>${wp}%</span></div><div class="bar g"><i style="width:${wp}%"></i></div>${p===100?'<div class="msg">ما شاء الله! خلصت كل مهام اليوم، تقبّل الله</div>':''}<div class="tools" style="margin-top:10px">${sk?`<span class="fire">✦ ${sk} يوم متتالي (80%+)</span>`:''}<button class="b" data-a="hide">${L.hide?'إظهار المنجز':'إخفاء المنجز'}</button><button class="b" data-a="x_simple" aria-pressed="${SM}">${SM?'العرض الكامل':'عرض اليوم المبسّط'}</button><button class="b p" data-a="x_print">${ico('j_print',14)} طباعة ورقة اليوم</button><button class="b" data-a="edit">${editMode?'تم التعديل':'تعديل المهام'}</button><button class="b" data-a="reset">${pend?'اضغط تاني للتأكيد':'تصفير اليوم'}</button></div></div>`;
+h+=`<div class="card"><div class="row"><b>تقدم ${DAYS.find(x=>x.d===dd).n}</b><span>${a} / ${b} (${p}%)</span></div><div class="bar"><i style="width:${p}%"></i></div><div class="row"><span>تقدم الأسبوع</span><span>${wp}%</span></div><div class="bar g"><i style="width:${wp}%"></i></div>${p===100?'<div class="msg">ما شاء الله! خلصت كل مهام اليوم، تقبّل الله</div>':''}<div class="tools" style="margin-top:10px">${sk?`<span class="fire">✦ ${sk} يوم متتالي (80%+)</span>`:''}<button class="b" data-a="hide">${L.hide?'إظهار المنجز':'إخفاء المنجز'}</button><button class="b" data-a="x_simple" aria-pressed="${SM}">${SM?'العرض الكامل':'عرض اليوم المبسّط'}</button><button class="b p" data-a="x_print">${ico('j_print',14)} طباعة ورقة اليوم</button><button class="b" data-a="x_prw">${ico('j_print',14)} طباعة مهام الأسبوع</button><button class="b" data-a="edit">${editMode?'تم التعديل':'تعديل المهام'}</button><button class="b" data-a="reset">${pend?'اضغط تاني للتأكيد':'تصفير اليوم'}</button></div></div>`;
 const PTt=prayerTimes(dateOf(dd)),LT=lastThird(dateOf(dd));{let PD=dateOf(dd),PP=PTt,tm=false;const nw=new Date();if(dd===nw.getDay()&&nw.getHours()+nw.getMinutes()/60>=PTt.isha){PD=new Date(nw.getFullYear(),nw.getMonth(),nw.getDate()+1);PP=prayerTimes(PD);tm=true}h+=prayerCard(dd,PP,PD,tm)}
 h+='<div class="grid'+(SM?' one':'')+'"><main class="card">';
 if(editMode)h+='<div class="st" style="margin:4px 0">وضع التعديل: عدّل اسم المهمة أو هدفها أو اسم القسم. «حذف نهائي» يزيلها فعليًا من قائمتك. أما «لهذا اليوم/أسبوع/شهر» فتخفيها مؤقتًا ثم تعود. وفي كل قسم زر لإضافة مهمة جديدة، وفي الأسفل «قسم جديد». «استرجاع الأصل» يرجّع الإعداد الأصلي.</div>';
@@ -1061,7 +1082,7 @@ h+=pmCard()+wordsCard()+memCard()+bkCard()+whCard()+rvCard()+fmCard()+mnCard();
 h+=arCard();
 h+='<div class="card"><b class="ct">'+ico('save',18)+'نسخة احتياطية</b><div class="tools" style="margin-top:8px"><button class="b" data-a="exp">تصدير</button><button class="b" data-a="imp">استيراد</button></div><div id="bkl">'+bkHtml()+'</div><div class="st" id="nm"></div><div class="jxp" id="pwa"></div></div>';
 h+='</aside>'}h+='</div>';
-h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 71)</span></div>';
+h+='<div class="row"><span>تتم المزامنة تلقائيا مع حسابك على كل أجهزتك، ويبدأ أسبوع جديد كل سبت. (إصدار 72)</span></div>';
 morphApp($('#app'),h);
 const nb=$('#nb');if(nb)nb.oninput=()=>{S.notes[dd]=nb.value;touch()};
 document.querySelectorAll('input[id^=nt_]').forEach(nt=>{nt.onkeydown=e=>{if(e.key==='Enter')addTask(nt.id.slice(3))}});const nc=$('#ncat');if(nc)nc.onkeydown=e=>{if(e.key==='Enter')newCat()};
@@ -1664,30 +1685,47 @@ function agAlerts(now,cur,ds){try{XS();[0,1].forEach(off=>{const k=off?addDays(d
 if(!fired[fk]&&cur>=tr&&cur<tr+1.5){fired[fk]=1;chimeSoft();showToast((e.rm?'بعد '+agRmTxt(e.rm)+': ':'حان الآن: ')+e.t)}})})}catch(x){}}
 
 /* ---- ورقة اليوم للطباعة ---- */
-const PR={done:false,dd:0};
-function prOpen(dd){PR.dd=dd;PR.done=false;let el=$('#prv');
+const PR={done:false,dd:0,wk:false};
+function prOpen(dd,wk){PR.dd=dd;PR.done=false;PR.wk=!!wk;prPage();let el=$('#prv');
 if(!el){el=document.createElement('div');el.id='prv';el.setAttribute('role','dialog');el.setAttribute('aria-label','معاينة ورقة اليوم');document.body.appendChild(el);
 el.addEventListener('click',e=>{const t=e.target.closest('[data-pr]');if(!t)return;const a=t.dataset.pr;if(a==='x')prClose();else if(a==='go')window.print();else if(a==='win')prWin();else if(a==='done'){PR.done=!PR.done;prDraw()}})}
 el.style.display='flex';document.body.classList.add('prOn');prDraw();const g=el.querySelector('[data-pr=go]');if(g)g.focus()}
 function prWin(){const a=$('#pa4');if(!a){return}
 const css=[].map.call(document.querySelectorAll('style'),x=>x.textContent).join('\n'),lk=[].map.call(document.querySelectorAll('link[rel=stylesheet]'),x=>'<link rel="stylesheet" href="'+x.href+'">').join('');
-const h='<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ورقة اليوم</title>'+lk+'<style>'+css+'</style><style>body{background:#fff!important;margin:0}#prv{display:block!important;position:static!important;background:none!important;padding:0!important}.pa4{position:static!important;transform:none!important;margin:0 auto}</style></head><body class="prOn"><div id="prv"><div class="prw" id="prw"><div class="pa4" id="pa4" style="'+(a.getAttribute('style')||'').replace(/transform:[^;]*;?/,'')+'">'+a.innerHTML+'</div></div></div><script>window.addEventListener("load",function(){setTimeout(function(){window.print()},700)})<\/script></body></html>';
+const h='<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+(PR.wk?'مهام الأسبوع':'ورقة اليوم')+'</title>'+lk+'<style>'+css+'</style><style>body{background:#fff!important;margin:0}#prv{display:block!important;position:static!important;background:none!important;padding:0!important}.pa4{position:static!important;transform:none!important;margin:0 auto}</style></head><body class="prOn"><div id="prv"><div class="prw" id="prw"><div class="'+a.className+'" id="pa4" style="'+(a.getAttribute('style')||'').replace(/transform:[^;]*;?/,'')+'">'+a.innerHTML+'</div></div></div><script>window.addEventListener("load",function(){setTimeout(function(){window.print()},700)})<\/script></body></html>';
 const u=URL.createObjectURL(new Blob([h],{type:'text/html;charset=utf-8'})),w=window.open(u,'_blank');if(!w){showToast('اسمح للموقع بفتح النوافذ المنبثقة ثم أعد المحاولة')}}
-function prClose(){const el=$('#prv');if(el)el.style.display='none';document.body.classList.remove('prOn')}
+function prClose(){const el=$('#prv');if(el)el.style.display='none';document.body.classList.remove('prOn');PR.wk=false;prPage()}
+/* اتجاه الورقة: أفقي لمهام الأسبوع */
+function prPage(){let st=document.getElementById('prpg');if(!st){st=document.createElement('style');st.id='prpg';document.head.appendChild(st)}st.textContent=PR.wk?'@page{size:A4 landscape;margin:0}':''}
 document.addEventListener('keydown',e=>{const el=$('#prv');if(e.key==='Escape'&&el&&el.style.display==='flex')prClose()});
 window.addEventListener('resize',()=>{const el=$('#prv');if(el&&el.style.display==='flex')prFit()});
 function prDraw(){const el=$('#prv');if(!el)return;
-el.innerHTML=`<div class="prtb"><button class="b p" data-pr="go">${ico('j_print',14)} طباعة</button><button class="b" data-pr="win">فتح في صفحة مستقلة</button><button class="b" data-pr="done" aria-pressed="${PR.done}">إظهار المنجز معلَّمًا</button><button class="b" data-pr="x">إغلاق</button><span class="st">تُطبع على ورقة A4 واحدة. إن لم تكن عندك طابعة فاختر «حفظ بصيغة PDF» من نافذة الطباعة. اليوميات الخاصة لا تُطبع، وتظهر الأسئلة فقط.</span></div><div class="prw" id="prw"><div class="pa4" id="pa4">${prSheet(PR.dd)}</div></div>`;
+el.innerHTML=`<div class="prtb"><button class="b p" data-pr="go">${ico('j_print',14)} طباعة</button><button class="b" data-pr="win">فتح في صفحة مستقلة</button><button class="b" data-pr="done" aria-pressed="${PR.done}">إظهار المنجز معلَّمًا</button><button class="b" data-pr="x">إغلاق</button><span class="st">${PR.wk?'مهام الأسبوع كله على ورقة A4 واحدة بالعرض، بدون الصلوات والأذكار وورد القرآن. إن لم تكن عندك طابعة فاختر «حفظ بصيغة PDF» من نافذة الطباعة.':'تُطبع على ورقة A4 واحدة. إن لم تكن عندك طابعة فاختر «حفظ بصيغة PDF» من نافذة الطباعة. اليوميات الخاصة لا تُطبع، وتظهر الأسئلة فقط.'}</span></div><div class="prw" id="prw"><div class="pa4${PR.wk?' wk':''}" id="pa4">${PR.wk?prWeek():prSheet(PR.dd)}</div></div>`;
 prFit();try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(prFit)}catch(e){}}
 function prFit(){const s=$('#pa4'),w=$('#prw');if(!s||!w)return;s.style.transform='none';s.style.setProperty('--pz','1');s.style.setProperty('--jm','46mm');
 let z=1,jm=46;for(let i=0;i<40&&s.scrollHeight>s.clientHeight+1;i++){if(jm>14){jm-=6;s.style.setProperty('--jm',jm+'mm')}else{z=Math.max(.5,z-.04);s.style.setProperty('--pz',z.toFixed(2))}}
-const px=793.7,ps=Math.min(1,(Math.min(window.innerWidth,900)-24)/px);w.style.width=Math.round(px*ps)+'px';w.style.height=Math.round(1118.4*ps)+'px';s.style.transform=ps<1?'scale('+ps+')':'none'}
+const px=PR.wk?1122.5:793.7,py=PR.wk?790:1118.4,ps=Math.min(1,(Math.min(window.innerWidth,PR.wk?1200:900)-24)/px);w.style.width=Math.round(px*ps)+'px';w.style.height=Math.round(py*ps)+'px';s.style.transform=ps<1?'scale('+ps+')':'none'}
 function prItem(dd,it,P,LT,DH,sd){const dn=sd&&isDone(dd,it),cnt=val(dd,it),ch=[];
 if(PT_ID[it.id])ch.push(fmtT(P[PT_ID[it.id]]));
 else if(!(it.u>0)){const tt=itemTime(dd,it,P);if(tt&&!isNaN(tt.s)){const sh=!tt.abs||tt.ov;if(sh)ch.push(rngTxt(fmtT(tt.s),tt.e?fmtT(tt.e):null))}}
 if(it.id==='p0')ch.push('الثلث الأخير من '+fmtT(LT.s));
 if(it.g)ch.push((sd?cnt:'___')+' / '+it.g+(it.s?' ركعة':''));
 return {h:`<div class="pi${FARD.has(it.id)?' fd':''}"><i class="bx${dn?' on':''}"></i><span class="pt1">${esc(it.t)}</span>${FARD.has(it.id)?'<em>فرض</em>':''}${it.n?`<span class="pn">${esc(nTxt(it.n))}</span>`:''}${ch.length?`<span class="pm">${esc(ch.join(' · '))}</span>`:''}</div>`,w:(String(it.t).length+String(it.n||'').length+ch.join(' · ').length>44)?1.7:1}}
+/* ورقة مهام الأسبوع: كل الأيام في صفحة واحدة، بلا الصلوات والأذكار وورد القرآن */
+const PRW_SKIP=new Set(['p','q','a','z']);
+const gdate=dt=>{try{return dt.toLocaleDateString('ar-u-nu-latn',{day:'numeric',month:'long'})}catch(e){return ''}};
+function prWeek(){XS();const sd=PR.done,days=DAYS.map(x=>x.d);let tot=0,dn=0;
+const cols=days.map(dd=>{const dt=dateOf(dd),P=prayerTimes(dt);const cs=catsM(dd).filter(c=>!PRW_SKIP.has(c.id)&&c.items&&c.items.length);
+const multi=cs.length>1;let b='';
+cs.forEach(c=>{if(multi)b+=`<div class="wkc">${esc(String(c.t).replace(/^۞\s*/,''))}</div>`;
+ c.items.forEach(it=>{const d=sd&&isDone(dd,it);tot++;if(isDone(dd,it))dn++;const ch=[];const xr=it.c?findX(it.c):null,nt=xr?xr.n:it.n;
+  if(!(it.u>0)){try{const tt=itemTime(dd,it,P);if(tt&&!isNaN(tt.s)&&(!tt.abs||tt.ov))ch.push(rngTxt(fmtT(tt.s),tt.e?fmtT(tt.e):null))}catch(e){}}
+  if(it.g)ch.push('× '+it.g);
+  b+=`<div class="wki"><i class="bx${d?' on':''}"></i><span><span class="wkt">${esc(it.t)}</span>${nt?`<span class="wkn">${esc(nTxt(nt))}</span>`:''}${ch.length?`<span class="wkm">${esc(ch.join(' · '))}</span>`:''}</span></div>`})});
+ const td=dd===new Date().getDay();
+ return `<div class="wkd${td?' td':''}"><div class="wkh"><b>${esc(DAYS.find(x=>x.d===dd).n)}</b><span>${esc(gdate(dt))}</span></div><div class="wkb">${b||'<div class="wke">لا مهام</div>'}</div></div>`}).join('');
+const a=dateOf(days[0]),z=dateOf(days[6]);
+return `<div class="wkhd"><div><div class="wktt">مهام الأسبوع</div><div class="wks">من ${esc(gdate(a))} إلى ${esc(gdate(z))}</div></div><div class="wks">${tot} مهمة${sd?` · أُنجز ${dn}`:''}</div></div><div class="wkg">${cols}</div><div class="wkf">الصلوات والأذكار وورد القرآن غير مطبوعة في هذه الورقة · ضع علامة ✓ في المربع عند الإنجاز</div>`}
 function prSheet(dd){XS();const dt=dateOf(dd),k=dkey(dd),P=prayerTimes(dt),LT=lastThird(dt),DH=duha(P),hj=agHj(k),sd=PR.done,occ=agOccs(k);
 let fi=null;try{fi=fastInfo(dt)}catch(e){}
 const gd=(()=>{try{return pd(k).toLocaleDateString('ar-u-nu-latn',{day:'numeric',month:'long',year:'numeric'})+' م'}catch(e){return k}})();
@@ -2129,6 +2167,7 @@ pwaUpd()}
 async function xAct(a,t){XS();const d=(t&&t.dataset)||{};
 if(a.slice(0,2)==='ag'&&agAct(a,d))return;
 if(a==='print'){prOpen(sel);return}
+if(a==='prw'){prOpen(sel,true);return}
 if(a==='qn'){qnGo(d.k);return}
 if(a.slice(0,2)==='bz'){await bzAct(a,d);return}
 if(a.slice(0,2)==='ar'&&arAct(a,d))return;

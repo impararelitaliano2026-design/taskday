@@ -1,6 +1,6 @@
 /* عامل الخدمة: يفتح البرنامج فورًا من النسخة المحفوظة ويعمل بلا إنترنت.
    بياناتك تُحفظ في الجهاز وتُزامَن عند عودة الاتصال. */
-const V='wp-v71';            /* ملفات البرنامج: تتجدد مع كل إصدار */
+const V='wp-v72';            /* ملفات البرنامج: تتجدد مع كل إصدار */
 const RT='wp-rt-1';          /* مكتبات وخطوط من الإنترنت بروابط ثابتة: لا تُحذف مع كل إصدار */
 const SHELL=['./','index.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-maskable-512.png'];
 const FB='https://www.gstatic.com/firebasejs/10.12.2/firebase-';
